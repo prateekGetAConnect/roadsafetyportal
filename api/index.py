@@ -1,7 +1,7 @@
 """Flask Backend for India Transport Analytics POC - Vercel Serverless Function."""
 
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 from twilio.rest import Client
@@ -10,7 +10,8 @@ from twilio.base.exceptions import TwilioRestException
 # Load environment variables (Vercel automatically provides them, but this helps for local Vercel CLI testing)
 load_dotenv()
 
-app = Flask(__name__)
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+app = Flask(__name__, static_folder=PROJECT_ROOT, static_url_path='')
 CORS(app)
 
 # Twilio Configuration
@@ -22,6 +23,17 @@ TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 twilio_client = None
 if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN:
     twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+@app.route('/')
+def index():
+    """Serve the main index.html file."""
+    # In Vercel, the cwd is the project root
+    return app.send_static_file('index.html')
+
+@app.route('/<path:path>')
+def static_files(path):
+    """Serve static files (js, css, images)."""
+    return app.send_static_file(path)
 
 @app.route('/api/alerts/sms', methods=['POST'])
 def send_sms_alert():
