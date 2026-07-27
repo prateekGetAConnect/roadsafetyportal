@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="India Transport Analytics POC — AI-driven road safety command center integrating Sarathi, Vahan, Challan, and Accident data for predictive risk analysis.">
+    <title>India Transport Analytics — Command Center</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Leaflet MarkerCluster -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+    <!-- App Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ═══════════════════════════════════════ LOGIN OVERLAY ═══════════════════════════════════════ -->
+    <div id="login-overlay" class="login-overlay">
+        <!-- GIS Theme Animations: Traffic & Crashes -->
+        <div class="login-animation-bg">
+            <div class="city-grid"></div>
+            
+            <!-- Intersection 1 -->
+            <div class="road-h" style="top: 30%;"></div>
+            <div class="road-v" style="left: 25%;"></div>
+            
+            <!-- Traffic Light 1 -->
+            <div class="traffic-light" style="top: 25%; left: 23%;">
+                <div class="light red-light"></div>
+                <div class="light yellow-light"></div>
+                <div class="light green-light"></div>
+            </div>
+
+            <!-- Car H1 (Left to Right) -->
+            <div class="car" style="top: 29.5%; left: -5%; animation: driveH1 6s infinite linear;">
+                <svg viewBox="0 0 100 100" width="28" height="16">
+                    <rect x="10" y="20" width="80" height="60" rx="10" fill="#ef4444" />
+                    <rect x="25" y="25" width="50" height="50" rx="5" fill="#0f172a" />
+                    <rect x="35" y="25" width="30" height="50" fill="#ef4444" />
+                    <rect x="85" y="25" width="10" height="15" rx="3" fill="#fef08a" />
+                    <rect x="85" y="60" width="10" height="15" rx="3" fill="#fef08a" />
+                    <rect x="5" y="25" width="10" height="15" rx="3" fill="#7f1d1d" />
+                    <rect x="5" y="60" width="10" height="15" rx="3" fill="#7f1d1d" />
+                </svg>
+            </div>
+            
+            <!-- Car V1 (Top to Bottom) -->
+            <div class="car" style="top: -5%; left: 24.5%; animation: driveV1 6s infinite linear;">
+                <svg viewBox="0 0 100 100" width="28" height="16" style="transform: rotate(90deg);">
+                    <rect x="10" y="20" width="80" height="60" rx="10" fill="#3b82f6" />
+                    <rect x="25" y="25" width="50" height="50" rx="5" fill="#0f172a" />
+                    <rect x="35" y="25" width="30" height="50" fill="#3b82f6" />
+                    <rect x="85" y="25" width="10" height="15" rx="3" fill="#fef08a" />
+                    <rect x="85" y="60" width="10" height="15" rx="3" fill="#fef08a" />
+                    <rect x="5" y="25" width="10" height="15" rx="3" fill="#1e3a8a" />
+                    <rect x="5" y="60" width="10" height="15" rx="3" fill="#1e3a8a" />
+                </svg>
+            </div>
+            <div class="crash-fx" style="top: 30%; left: 25%; animation: crash1 6s infinite;"></div>
+            
+            <!-- Intersection 2 -->
+            <div class="road-h" style="top: 70%;"></div>
+            <div class="road-v" style="left: 75%;"></div>
+            
+            <!-- Traffic Light 2 -->
+            <div class="traffic-light" style="top: 65%; left: 73%;">
+                <div class="light red-light"></div>
+                <div class="light yellow-light"></div>
+                <div class="light green-light"></div>
+            </div>
+
+            <!-- Car H2 (Right to Left) -->
+            <div class="car" style="top: 69.5%; left: 105%; animation: driveH2 8s infinite linear;">
+                <svg viewBox="0 0 100 100" width="28" height="16" style="transform: rotate(180deg);">
+                    <rect x="10" y="20" width="80" height="60" rx="10" fill="#10b981" />
+                    <rect x="25" y="25" width="50" height="50" rx="5" fill="#0f172a" />
+                    <rect x="35" y="25" width="30" height="50" fill="#10b981" />
+                    <rect x="85" y="25" width="10" height="15" rx="3" fill="#fef08a" />
+                    <rect x="85" y="60" width="10" height="15" rx="3" fill="#fef08a" />
+                    <rect x="5" y="25" width="10" height="15" rx="3" fill="#064e3b" />
+                    <rect x="5" y="60" width="10" height="15" rx="3" fill="#064e3b" />
+                </svg>
+            </div>
+            
+            <!-- Car V2 (Top to Bottom) -->
+            <div class="car" style="top: -5%; left: 74.5%; animation: driveV2 8s infinite linear;">
+                <svg viewBox="0 0 100 100" width="28" height="16" style="transform: rotate(90deg);">
+                    <rect x="10" y="20" width="80" height="60" rx="10" fill="#f59e0b" />
+                    <rect x="25" y="25" width="50" height="50" rx="5" fill="#0f172a" />
+                    <rect x="35" y="25" width="30" height="50" fill="#f59e0b" />
+                    <rect x="85" y="25" width="10" height="15" rx="3" fill="#fef08a" />
+                    <rect x="85" y="60" width="10" height="15" rx="3" fill="#fef08a" />
+                    <rect x="5" y="25" width="10" height="15" rx="3" fill="#78350f" />
+                    <rect x="5" y="60" width="10" height="15" rx="3" fill="#78350f" />
+                </svg>
+            </div>
+            <div class="crash-fx" style="top: 70%; left: 75%; animation: crash2 8s infinite;"></div>
+        </div>
+
+        <div class="login-card card">
+            <div class="login-header">
+                <div class="brand-icon" style="margin: 0 auto 16px auto; width: 48px; height: 48px;">
+                    <i data-lucide="shield-check" class="brand-lucide" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h2 style="margin: 0; color: var(--text-primary); font-size: 1.5rem; font-weight: 600;">Parivahan</h2>
+                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">Analytics Command Center</p>
+            </div>
+
+            <div class="login-form">
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 8px;">Username</label>
+                    <div class="search-box" style="margin: 0; padding: 10px 16px;">
+                        <i data-lucide="user" style="width: 16px; height: 16px; color: var(--text-muted); margin-right: 12px;"></i>
+                        <input type="text" id="login-username" placeholder="Enter username" style="background: transparent; border: none; color: var(--text-primary); outline: none; width: 100%; font-family: inherit; font-size: 0.9rem;" autocomplete="off">
+                    </div>
+                </div>
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 8px;">Password</label>
+                    <div class="search-box" style="margin: 0; padding: 10px 16px;">
+                        <i data-lucide="lock" style="width: 16px; height: 16px; color: var(--text-muted); margin-right: 12px;"></i>
+                        <input type="password" id="login-password" placeholder="Enter password" style="background: transparent; border: none; color: var(--text-primary); outline: none; width: 100%; font-family: inherit; font-size: 0.9rem;">
+                    </div>
+                </div>
+                
+                <div id="login-error" style="display: none; color: var(--accent-red); font-size: 0.8rem; margin-bottom: 16px; text-align: center; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px; border-radius: var(--radius-sm);">
+                    <i data-lucide="alert-circle" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i>
+                    <span style="vertical-align: middle;">Invalid credentials</span>
+                </div>
+
+                <button id="login-btn" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-weight: 600; font-size: 0.95rem;">
+                    Authenticate Session
+                    <i data-lucide="arrow-right" style="width: 16px; height: 16px; margin-left: 8px;"></i>
+                </button>
+            </div>
+            
+            <div style="margin-top: 24px; text-align: center; border-top: 1px solid var(--border-glass); padding-top: 16px;">
+                <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">Restricted Government Access</p>
+            </div>
+        </div>
+    </div>
+    <div class="app-layout">
+
+        <!-- ═══════════════════════════════════════ SIDEBAR ═══════════════════════════════════════ -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <i data-lucide="shield-check" class="brand-lucide"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">Parivahan</span>
+                    <span class="brand-subtitle">Analytics Command Center</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="command-center" id="nav-command-center">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Command Center</span>
+                </button>
+                <button class="nav-item" data-tab="rto-efficiency" id="nav-rto-efficiency">
+                    <i data-lucide="building-2"></i>
+                    <span>RTO Efficiency</span>
+                </button>
+                <button class="nav-item" data-tab="driver-risk" id="nav-driver-risk">
+                    <i data-lucide="user-round-search"></i>
+                    <span>Driver Risk (Sarathi)</span>
+                </button>
+                <button class="nav-item" data-tab="vehicle-risk" id="nav-vehicle-risk">
+                    <i data-lucide="car"></i>
+                    <span>Vehicle Risk (Vahan)</span>
+                </button>
+                <button class="nav-item" data-tab="accident-hotspot" id="nav-accident-hotspot">
+                    <i data-lucide="map-pin"></i>
+                    <span>Accident Hotspots</span>
+                </button>
+                <button class="nav-item" data-tab="settings-alerts" id="nav-settings-alerts">
+                    <i data-lucide="bell-ring"></i>
+                    <span>Settings & Alerts</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-footer-info">
+                    <i data-lucide="database" style="width:14px;height:14px;"></i>
+                    <span>POC Data: Simulated</span>
+                </div>
+                <div class="sidebar-footer-info">
+                    <i data-lucide="clock" style="width:14px;height:14px;"></i>
+                    <span id="sidebar-clock">--:--:--</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ═══════════════════════════════════════ HEADER ═══════════════════════════════════════ -->
+        <header class="header" id="header">
+            <div class="header-left">
+                <button class="sidebar-toggle btn-ghost" id="sidebar-toggle">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div class="header-breadcrumb">
+                    <span class="breadcrumb-prefix">Dashboard</span>
+                    <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
+                    <span class="breadcrumb-current" id="breadcrumb-current">Command Center</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-state-filter">
+                    <label for="state-filter" class="filter-label">State:</label>
+                    <select id="state-filter" class="role-selector">
+                        <option value="All">All States</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Karnataka">Karnataka</option>
+                    </select>
+                </div>
+                <div class="header-role">
+                    <label for="role-selector" class="filter-label">Role:</label>
+                    <select id="role-selector" class="role-selector">
+                        <option value="commissioner">Transport Commissioner</option>
+                        <option value="collector">District Collector</option>
+                        <option value="sp-traffic">SP Traffic</option>
+                        <option value="rto-head">RTO Head</option>
+                    </select>
+                </div>
+                <button class="btn-ghost notification-btn" id="notification-btn">
+                    <i data-lucide="bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ═══════════════════════════════════════ MAIN CONTENT ═══════════════════════════════════════ -->
+        <main class="main-content" id="main-content">
+
+            <!-- ╔══════════════════════ TAB 1: COMMAND CENTER ══════════════════════╗ -->
+            <div class="tab-pane active" id="tab-command-center">
+                <div class="page-header">
+                    <h1 class="page-title">Integrated Road Safety Command Dashboard</h1>
+                    <p class="page-subtitle">Real-time overview for leadership across all operational dimensions</p>
+                </div>
+
+                <!-- Persona Actionables -->
+                <div class="card" id="persona-insights-card" style="margin-bottom: 20px; border-color: var(--accent-indigo);">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: var(--accent-indigo); display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="brain-circuit"></i> AI Actionable Insights
+                        </h3>
+                        <span class="card-subtitle" id="persona-insights-role">for Transport Commissioner</span>
+                    </div>
+                    <div class="grid-2" id="persona-insights-container" style="margin-top: 16px;">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+
+                <!-- KPI Row -->
+                <div class="grid-4" id="cc-kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-icon kpi-icon-indigo"><i data-lucide="users"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-value" id="cc-total-drivers">--</span>
+                            <span class="kpi-label">Total Drivers</span>
+                            <span class="kpi-trend up"><i data-lucide="trending-up" style="width:14px;height:14px;"></i> 8.2%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon kpi-icon-teal"><i data-lucide="car"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-value" id="cc-total-vehicles">--</span>
+                            <span class="kpi-label">Registered Vehicles</span>
+                            <span class="kpi-trend up"><i data-lucide="trending-up" style="width:14px;height:14px;"></i> 12.5%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon kpi-icon-amber"><i data-lucide="file-warning"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-value" id="cc-total-challans">--</span>
+                            <span class="kpi-label">Challans Issued</span>
+                            <span class="kpi-trend down"><i data-lucide="trending-down" style="width:14px;height:14px;"></i> 3.1%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon kpi-icon-red"><i data-lucide="alert-triangle"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-value" id="cc-total-accidents">--</span>
+                            <span class="kpi-label">Accidents Reported</span>
+                            <span class="kpi-trend down"><i data-lucide="trending-down" style="width:14px;height:14px;"></i> 5.7%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 1 -->
+                <div class="grid-2" style="margin-top: 20px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Violation Type Distribution</h3>
+                            <span class="card-subtitle">Across all states</span>
+                        </div>
+                        <div id="cc-chart-violations" style="height: 320px;"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Accident Severity Breakdown</h3>
+                            <span class="card-subtitle">Fatal • Grievous • Minor</span>
+                        </div>
+                        <div id="cc-chart-severity" style="height: 320px;"></div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 2 -->
+                <div class="grid-2" style="margin-top: 20px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Driver Risk Distribution</h3>
+                            <span class="card-subtitle">AI-scored risk categories</span>
+                        </div>
+                        <div id="cc-chart-driver-risk" style="height: 300px;"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">RTO Efficiency Comparison</h3>
+                            <span class="card-subtitle">Peer-to-peer benchmarking</span>
+                        </div>
+                        <div id="cc-chart-rto-efficiency" style="height: 300px;"></div>
+                    </div>
+                </div>
+
+                <!-- Alerts Table -->
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Critical Alerts</h3>
+                        <span class="risk-badge risk-high">Live</span>
+                    </div>
+                    <table class="data-table" id="cc-alerts-table">
+                        <thead>
+                            <tr>
+                                <th>Priority</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>State</th>
+                                <th>Action Required</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cc-alerts-tbody">
+                            <!-- Dynamic -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ╔══════════════════════ TAB 2: RTO EFFICIENCY ══════════════════════╗ -->
+            <div class="tab-pane" id="tab-rto-efficiency">
+                <div class="page-header">
+                    <h1 class="page-title">AI-Driven RTO Operational Efficiency</h1>
+                    <p class="page-subtitle">Predictive analytics, staffing optimisation & peer benchmarking</p>
+                </div>
+
+                <!-- RTO Selector -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="filter-group">
+                        <label class="filter-label" for="rto-select">Select RTO:</label>
+                        <select id="rto-select" class="role-selector" style="min-width: 250px;">
+                            <!-- Dynamic -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- RTO KPIs -->
+                <div class="grid-4" id="rto-kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-icon kpi-icon-indigo"><i data-lucide="gauge"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-value" id="rto-efficiency-score">--</span>
+                            <span class="kpi-label">Efficiency Score</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon kpi-icon-amber"><i data-lucide="clock"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-value" id="rto-avg-delay">--</span>
+                            <span class="kpi-label">Avg. Processing (days)</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon kpi-icon-red"><i data-lucide="layers"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-value" id="rto-pending">--</span>
+                            <span class="kpi-label">Total Pending</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon kpi-icon-teal"><i data-lucide="users"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-value" id="rto-staff-count">--</span>
+                            <span class="kpi-label">Staff Members</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service-wise breakdown & Bottlenecks -->
+                <div class="grid-2" style="margin-top: 20px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Service-wise Processing</h3>
+                            <span class="card-subtitle">Received vs Processed vs Pending</span>
+                        </div>
+                        <div id="rto-chart-services" style="height: 350px;"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Bottleneck Analysis</h3>
+                            <span class="card-subtitle">AI-identified workflow issues</span>
+                        </div>
+                        <div id="rto-bottlenecks" class="bottleneck-list">
+                            <!-- Dynamic -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staffing Optimizer -->
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <h3 class="card-title">AI Staffing Optimizer</h3>
+                        <span class="card-subtitle">Drag to simulate staff allocation changes</span>
+                    </div>
+                    <div class="staffing-optimizer">
+                        <div class="staff-slider-row">
+                            <label class="staff-slider-label">Additional Staff:</label>
+                            <input type="range" id="rto-staff-slider" class="range-slider" min="0" max="20" value="0">
+                            <span class="staff-slider-value" id="rto-staff-slider-value">+0</span>
+                        </div>
+                        <div class="grid-3" id="rto-prediction-cards" style="margin-top: 20px;">
+                            <div class="card prediction-card">
+                                <span class="prediction-label">Predicted Avg. Delay</span>
+                                <span class="prediction-value" id="rto-predicted-delay">-- days</span>
+                                <span class="prediction-change" id="rto-delay-change"></span>
+                            </div>
+                            <div class="card prediction-card">
+                                <span class="prediction-label">Estimated Clearance</span>
+                                <span class="prediction-value" id="rto-predicted-clearance">-- %</span>
+                                <span class="prediction-change" id="rto-clearance-change"></span>
+                            </div>
+                            <div class="card prediction-card">
+                                <span class="prediction-label">Staff Utilisation</span>
+                                <span class="prediction-value" id="rto-predicted-utilization">-- %</span>
+                                <span class="prediction-change" id="rto-utilization-change"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test Slot Utilisation -->
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Test Slot Utilisation</h3>
+                    </div>
+                    <div id="rto-chart-slots" style="height: 260px;"></div>
+                </div>
+            </div>
+
+            <!-- ╔══════════════════════ TAB 3: DRIVER RISK ══════════════════════╗ -->
+            <div class="tab-pane" id="tab-driver-risk">
+                <div class="page-header">
+                    <h1 class="page-title">Sarathi Driver Risk Scoring</h1>
+                    <p class="page-subtitle">AI-powered risk assessment with explainable factors</p>
+                </div>
+
+                <!-- Search -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="search-container">
+                        <div class="search-box-wrapper">
+                            <i data-lucide="search" class="search-icon"></i>
+                            <input type="text" id="driver-search" class="search-box" placeholder="Search by DL Number or Driver Name (e.g., DL-11...)">
+                        </div>
+                        <div class="search-suggestions" id="driver-suggestions">
+                            <!-- Dynamic -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Driver Profile (Hidden until search) -->
+                <div id="driver-profile-section" style="display: none;">
+                    <!-- Profile + Risk Score -->
+                    <div class="grid-2-1" style="margin-bottom: 20px;">
+                        <div class="card profile-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Driver Profile</h3>
+                                <span class="risk-badge" id="driver-risk-badge">--</span>
+                            </div>
+                            <div class="profile-header">
+                                <div class="profile-avatar" id="driver-avatar">
+                                    <i data-lucide="user" style="width:32px;height:32px;"></i>
+                                </div>
+                                <div class="profile-info">
+                                    <h2 class="profile-name" id="driver-name">--</h2>
+                                    <span class="profile-id" id="driver-dl">--</span>
+                                </div>
+                            </div>
+                            <div class="profile-fields">
+                                <div class="profile-field"><span class="field-label">Age</span><span class="field-value" id="driver-age">--</span></div>
+                                <div class="profile-field"><span class="field-label">Gender</span><span class="field-value" id="driver-gender">--</span></div>
+                                <div class="profile-field"><span class="field-label">State</span><span class="field-value" id="driver-state">--</span></div>
+                                <div class="profile-field"><span class="field-label">RTO</span><span class="field-value" id="driver-rto">--</span></div>
+                                <div class="profile-field"><span class="field-label">License Type</span><span class="field-value" id="driver-license-type">--</span></div>
+                                <div class="profile-field"><span class="field-label">Issue Date</span><span class="field-value" id="driver-issue-date">--</span></div>
+                                <div class="profile-field"><span class="field-label">Expiry Date</span><span class="field-value" id="driver-expiry-date">--</span></div>
+                                <div class="profile-field"><span class="field-label">Experience</span><span class="field-value" id="driver-experience">--</span></div>
+                                <div class="profile-field"><span class="field-label">Test Attempts</span><span class="field-value" id="driver-test-attempts">--</span></div>
+                                <div class="profile-field"><span class="field-label">Status</span><span class="field-value" id="driver-status">--</span></div>
+                                <div class="profile-field"><span class="field-label">Violations</span><span class="field-value" id="driver-violations">--</span></div>
+                                <div class="profile-field"><span class="field-label">Accidents</span><span class="field-value" id="driver-accidents">--</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Risk Score Gauge -->
+                        <div class="card risk-score-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Risk Score</h3>
+                            </div>
+                            <div class="risk-score-display">
+                                <div class="risk-gauge" id="driver-risk-gauge">
+                                    <svg viewBox="0 0 200 200" class="risk-gauge-svg">
+                                        <circle cx="100" cy="100" r="85" class="gauge-bg" />
+                                        <circle cx="100" cy="100" r="85" class="gauge-fill" id="driver-gauge-fill" />
+                                    </svg>
+                                    <span class="risk-score-number" id="driver-risk-score">--</span>
+                                    <span class="risk-score-label" id="driver-risk-label">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- XAI Factors -->
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">Explainable AI — Risk Factor Breakdown</h3>
+                            <span class="card-subtitle">Contribution of each factor to the overall risk score</span>
+                        </div>
+                        <div id="driver-xai-chart" style="height: 320px;"></div>
+                    </div>
+
+                    <!-- Challan History -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Challan History</h3>
+                            <span class="card-subtitle" id="driver-challan-count">-- records</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Challan ID</th>
+                                        <th>Date</th>
+                                        <th>Violation</th>
+                                        <th>Location</th>
+                                        <th>Fine (₹)</th>
+                                        <th>Status</th>
+                                        <th>Detection</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="driver-challans-tbody">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Default State: Top Risk Drivers -->
+                <div id="driver-default-view">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Top High-Risk Drivers</h3>
+                            <span class="card-subtitle">AI-identified highest risk profiles</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>DL Number</th>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>State</th>
+                                        <th>Violations</th>
+                                        <th>Risk Score</th>
+                                        <th>Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="driver-top-risk-tbody">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ╔══════════════════════ TAB 4: VEHICLE RISK ══════════════════════╗ -->
+            <div class="tab-pane" id="tab-vehicle-risk">
+                <div class="page-header">
+                    <h1 class="page-title">Vahan Vehicle Risk Scoring</h1>
+                    <p class="page-subtitle">Predictive risk assessment for registered vehicles</p>
+                </div>
+
+                <!-- Search -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="search-container">
+                        <div class="search-box-wrapper">
+                            <i data-lucide="search" class="search-icon"></i>
+                            <input type="text" id="vehicle-search" class="search-box" placeholder="Search by Registration Number or Owner Name (e.g., DL-3C...)">
+                        </div>
+                        <div class="search-suggestions" id="vehicle-suggestions">
+                            <!-- Dynamic -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Profile (Hidden until search) -->
+                <div id="vehicle-profile-section" style="display: none;">
+                    <div class="grid-2-1" style="margin-bottom: 20px;">
+                        <div class="card profile-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Vehicle Details</h3>
+                                <span class="risk-badge" id="vehicle-risk-badge">--</span>
+                            </div>
+                            <div class="profile-header">
+                                <div class="profile-avatar vehicle-avatar" id="vehicle-avatar">
+                                    <i data-lucide="car" style="width:32px;height:32px;"></i>
+                                </div>
+                                <div class="profile-info">
+                                    <h2 class="profile-name" id="vehicle-make-model">--</h2>
+                                    <span class="profile-id" id="vehicle-reg">--</span>
+                                </div>
+                            </div>
+                            <div class="profile-fields">
+                                <div class="profile-field"><span class="field-label">Owner</span><span class="field-value" id="vehicle-owner">--</span></div>
+                                <div class="profile-field"><span class="field-label">Type</span><span class="field-value" id="vehicle-type">--</span></div>
+                                <div class="profile-field"><span class="field-label">Fuel</span><span class="field-value" id="vehicle-fuel">--</span></div>
+                                <div class="profile-field"><span class="field-label">Color</span><span class="field-value" id="vehicle-color">--</span></div>
+                                <div class="profile-field"><span class="field-label">Registered</span><span class="field-value" id="vehicle-reg-date">--</span></div>
+                                <div class="profile-field"><span class="field-label">Vehicle Age</span><span class="field-value" id="vehicle-age">--</span></div>
+                                <div class="profile-field"><span class="field-label">Commercial</span><span class="field-value" id="vehicle-commercial">--</span></div>
+                                <div class="profile-field"><span class="field-label">Fitness Valid</span><span class="field-value" id="vehicle-fitness">--</span></div>
+                                <div class="profile-field"><span class="field-label">PUCC Valid</span><span class="field-value" id="vehicle-pucc">--</span></div>
+                                <div class="profile-field"><span class="field-label">Insurance</span><span class="field-value" id="vehicle-insurance">--</span></div>
+                                <div class="profile-field"><span class="field-label">Ownership Changes</span><span class="field-value" id="vehicle-ownership">--</span></div>
+                                <div class="profile-field"><span class="field-label">Accidents</span><span class="field-value" id="vehicle-accidents">--</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Vehicle Risk Gauge -->
+                        <div class="card risk-score-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Risk Score</h3>
+                            </div>
+                            <div class="risk-score-display">
+                                <div class="risk-gauge" id="vehicle-risk-gauge">
+                                    <svg viewBox="0 0 200 200" class="risk-gauge-svg">
+                                        <circle cx="100" cy="100" r="85" class="gauge-bg" />
+                                        <circle cx="100" cy="100" r="85" class="gauge-fill" id="vehicle-gauge-fill" />
+                                    </svg>
+                                    <span class="risk-score-number" id="vehicle-risk-score">--</span>
+                                    <span class="risk-score-label" id="vehicle-risk-label">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- XAI Factors for Vehicle -->
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">Risk Factor Breakdown</h3>
+                            <span class="card-subtitle">AI-identified risk drivers</span>
+                        </div>
+                        <div id="vehicle-xai-chart" style="height: 300px;"></div>
+                    </div>
+
+                    <!-- Vehicle Challan History -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Vehicle Challan History</h3>
+                            <span class="card-subtitle" id="vehicle-challan-count">-- records</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Challan ID</th>
+                                        <th>Date</th>
+                                        <th>Violation</th>
+                                        <th>Location</th>
+                                        <th>Fine (₹)</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vehicle-challans-tbody">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Default: Top Risk Vehicles -->
+                <div id="vehicle-default-view">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Top High-Risk Vehicles</h3>
+                            <span class="card-subtitle">AI-identified highest risk vehicles</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Reg Number</th>
+                                        <th>Type</th>
+                                        <th>Make/Model</th>
+                                        <th>Age (yrs)</th>
+                                        <th>Fitness</th>
+                                        <th>Risk Score</th>
+                                        <th>Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vehicle-top-risk-tbody">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ╔══════════════════════ TAB 5: ACCIDENT HOTSPOTS ══════════════════════╗ -->
+            <div class="tab-pane" id="tab-accident-hotspot">
+                <div class="page-header">
+                    <h1 class="page-title">Accident Hotspot Prediction & Early Warning</h1>
+                    <p class="page-subtitle">GIS-powered spatial analytics for predictive prevention</p>
+                </div>
+
+                <!-- Filters -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="filter-group">
+                        <div class="filter-section">
+                            <label class="filter-label">Time of Day:</label>
+                            <div class="filter-chips" id="accident-time-filter">
+                                <button class="filter-chip active" data-value="All">All</button>
+                                <button class="filter-chip" data-value="Morning">Morning</button>
+                                <button class="filter-chip" data-value="Afternoon">Afternoon</button>
+                                <button class="filter-chip" data-value="Evening">Evening</button>
+                                <button class="filter-chip" data-value="Night">Night</button>
+                            </div>
+                        </div>
+                        <div class="filter-section">
+                            <label class="filter-label">Season:</label>
+                            <div class="filter-chips" id="accident-season-filter">
+                                <button class="filter-chip active" data-value="All">All</button>
+                                <button class="filter-chip" data-value="Summer">Summer</button>
+                                <button class="filter-chip" data-value="Monsoon">Monsoon</button>
+                                <button class="filter-chip" data-value="Winter">Winter</button>
+                                <button class="filter-chip" data-value="Spring">Spring</button>
+                            </div>
+                        </div>
+                        <div class="filter-section">
+                            <label class="filter-label">Severity:</label>
+                            <div class="filter-chips" id="accident-severity-filter">
+                                <button class="filter-chip active" data-value="All">All</button>
+                                <button class="filter-chip" data-value="Fatal">Fatal</button>
+                                <button class="filter-chip" data-value="Grievous">Grievous</button>
+                                <button class="filter-chip" data-value="Minor">Minor</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hotspot Summary KPIs -->
+                <div class="grid-4" id="hotspot-kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-icon kpi-icon-red"><i data-lucide="flame"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-value" id="hotspot-total">--</span>
+                            <span class="kpi-label">Total Accidents</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon kpi-icon-amber"><i data-lucide="skull"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-value" id="hotspot-fatal">--</span>
+                            <span class="kpi-label">Fatal Accidents</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon kpi-icon-indigo"><i data-lucide="target"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-value" id="hotspot-segments">--</span>
+                            <span class="kpi-label">High-Risk Segments</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon kpi-icon-teal"><i data-lucide="moon"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-value" id="hotspot-peak-time">--</span>
+                            <span class="kpi-label">Peak Risk Time</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map + Hotspot List -->
+                <div class="grid-2-1" style="margin-top: 20px;">
+                    <div class="card">
+                        <div class="card-header" style="justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <h3 class="card-title">Accident Hotspot Map</h3>
+                                <span class="card-subtitle">Interactive GIS clustering</span>
+                            </div>
+                            <div class="map-drilldown-controls" style="display: flex; gap: 8px;">
+                                <select id="map-state-select" class="role-selector" style="font-size: 12px; padding: 4px 8px;">
+                                    <option value="All">All States</option>
+                                    <!-- Dynamic -->
+                                </select>
+                                <select id="map-district-select" class="role-selector" style="font-size: 12px; padding: 4px 8px;" disabled>
+                                    <option value="All">All Districts</option>
+                                    <!-- Dynamic -->
+                                </select>
+                                <select id="map-area-select" class="role-selector" style="font-size: 12px; padding: 4px 8px;" disabled>
+                                    <option value="All">All Areas</option>
+                                    <!-- Dynamic -->
+                                </select>
+                            </div>
+                        </div>
+                        <div id="accident-map" class="map-container"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">High-Risk Segments</h3>
+                            <span class="card-subtitle">Ranked by risk score</span>
+                        </div>
+                        <div id="hotspot-list" class="hotspot-list">
+                            <!-- Dynamic -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Charts -->
+                <div class="grid-2" style="margin-top: 20px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Accidents by Time of Day</h3>
+                        </div>
+                        <div id="hotspot-chart-time" style="height: 300px;"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Accidents by Cause</h3>
+                        </div>
+                        <div id="hotspot-chart-cause" style="height: 300px;"></div>
+                    </div>
+                </div>
+
+                <!-- Enforcement Recommendations -->
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Preventive Enforcement Recommendations</h3>
+                        <span class="card-subtitle">AI-generated action items</span>
+                    </div>
+                    <div id="enforcement-recommendations" class="recommendations-grid">
+                        <!-- Dynamic -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ SETTINGS & ALERTS (TAB 6) ═══════════════════════════════════════ -->
+            <div class="tab-pane" id="tab-settings-alerts">
+                <div class="header-banner">
+                    <h2>Settings & Alerts</h2>
+                    <p class="text-secondary">Configure automated notifications for severe accidents and system events.</p>
+                </div>
+                
+                <div class="grid-2" style="margin-top: 24px;">
+                    <!-- Alert Configuration Form -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Create New Alert</h3>
+                            <span class="card-subtitle">Triggered on 'Fatal' or 'Grievous' accidents</span>
+                        </div>
+                        <form id="alert-form" style="margin-top: 20px; display: flex; flex-direction: column; gap: 16px;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 0.85rem;">Target State</label>
+                                <select id="alert-state" class="search-box" style="width: 100%; appearance: auto; background-color: rgba(17,25,45,0.7); border: 1px solid var(--border-glass); color: var(--text-primary); padding: 10px 14px;">
+                                    <option value="All">All States</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 0.85rem;">Target District</label>
+                                <select id="alert-district" class="search-box" style="width: 100%; appearance: auto; background-color: rgba(17,25,45,0.7); border: 1px solid var(--border-glass); color: var(--text-primary); padding: 10px 14px;" disabled>
+                                    <option value="All">All Districts</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 0.85rem;">Target Area (Road Segment)</label>
+                                <select id="alert-area" class="search-box" style="width: 100%; appearance: auto; background-color: rgba(17,25,45,0.7); border: 1px solid var(--border-glass); color: var(--text-primary); padding: 10px 14px;" disabled>
+                                    <option value="All">All Areas</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 8px;">
+                                <label style="display: block; margin-bottom: 10px; color: var(--text-secondary); font-size: 0.85rem;">Delivery Method</label>
+                                <div style="display: flex; gap: 20px;">
+                                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                        <input type="radio" name="alert-method" value="SMS" checked> 
+                                        <i data-lucide="smartphone" style="width: 16px; height: 16px;"></i> SMS
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                        <input type="radio" name="alert-method" value="Email"> 
+                                        <i data-lucide="mail" style="width: 16px; height: 16px;"></i> Email
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 0.85rem;">Contact Detail</label>
+                                <input type="text" id="alert-contact" class="search-box" style="width: 100%; background-color: rgba(17,25,45,0.7); border: 1px solid var(--border-glass); color: var(--text-primary); padding: 10px 14px;" placeholder="e.g. +91 9876543210" required>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="margin-top: 10px; width: 100%; justify-content: center;">
+                                <i data-lucide="plus" style="margin-right: 8px;"></i> Create Alert
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Active Alerts List -->
+                    <div class="card" style="display: flex; flex-direction: column;">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 class="card-title">Active Alerts</h3>
+                                <span class="card-subtitle">Currently monitored rules</span>
+                            </div>
+                            <button id="btn-simulate-accident" class="btn btn-outline" style="border-color: var(--accent-red); color: var(--accent-red);">
+                                <i data-lucide="alert-triangle" style="margin-right: 6px;"></i> Simulate Accident
+                            </button>
+                        </div>
+                        <div style="flex: 1; margin-top: 16px; overflow-y: auto;">
+                            <table class="data-table" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Location</th>
+                                        <th>Method</th>
+                                        <th>Contact</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="active-alerts-tbody">
+                                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">No active alerts configured.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ═══════════════════════════════════════ HOTSPOT DRILL-DOWN PANEL ═══════════════════════════════════════ -->
+    <div class="drilldown-backdrop" id="drilldown-backdrop"></div>
+    <div class="drilldown-panel" id="drilldown-panel">
+        <div class="drilldown-header">
+            <div class="drilldown-header-left">
+                <h2 id="drilldown-title">Road Segment Name</h2>
+                <div class="drilldown-subtitle">
+                    <span class="risk-badge" id="drilldown-risk-badge">Critical</span>
+                    <span id="drilldown-state">Delhi</span>
+                </div>
+            </div>
+            <button class="drilldown-close" id="drilldown-close">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="drilldown-body">
+            <!-- Mini KPIs -->
+            <div class="drilldown-kpis">
+                <div class="drilldown-kpi">
+                    <span class="dd-kpi-value" id="dd-total" style="color: var(--accent-indigo);">0</span>
+                    <span class="dd-kpi-label">Accidents</span>
+                </div>
+                <div class="drilldown-kpi">
+                    <span class="dd-kpi-value" id="dd-fatal" style="color: var(--accent-red);">0</span>
+                    <span class="dd-kpi-label">Fatal</span>
+                </div>
+                <div class="drilldown-kpi">
+                    <span class="dd-kpi-value" id="dd-injured" style="color: var(--accent-amber);">0</span>
+                    <span class="dd-kpi-label">Injured</span>
+                </div>
+                <div class="drilldown-kpi">
+                    <span class="dd-kpi-value" id="dd-casualties" style="color: var(--accent-rose);">0</span>
+                    <span class="dd-kpi-label">Casualties</span>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="drilldown-section-title"><i data-lucide="bar-chart-3"></i> Breakdown Analysis</div>
+            <div class="drilldown-chart-row">
+                <div class="drilldown-chart-card">
+                    <h4>Severity Distribution</h4>
+                    <div id="dd-chart-severity" style="height: 180px;"></div>
+                </div>
+                <div class="drilldown-chart-card">
+                    <h4>Cause Analysis</h4>
+                    <div id="dd-chart-cause" style="height: 180px;"></div>
+                </div>
+            </div>
+
+            <div class="drilldown-chart-row">
+                <div class="drilldown-chart-card">
+                    <h4>Time of Day</h4>
+                    <div id="dd-chart-time" style="height: 180px;"></div>
+                </div>
+                <div class="drilldown-chart-card">
+                    <h4>Weather Conditions</h4>
+                    <div id="dd-chart-weather" style="height: 180px;"></div>
+                </div>
+            </div>
+
+            <!-- Accident Records Table -->
+            <div class="drilldown-section-title"><i data-lucide="file-text"></i> Individual Accident Records</div>
+            <div class="drilldown-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Severity</th>
+                            <th>Cause</th>
+                            <th>Vehicles</th>
+                            <th>Casualties</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dd-accidents-tbody">
+                        <!-- Dynamic -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- AI Recommendations -->
+            <div class="drilldown-section-title"><i data-lucide="brain-circuit"></i> AI Enforcement Recommendations</div>
+            <div class="drilldown-recs" id="dd-recommendations">
+                <!-- Dynamic -->
+            </div>
+        </div>
+    </div>
+    <!-- Global Data Table Modal -->
+    <div id="data-table-modal" class="modal" style="display: none; z-index: 9999;">
+        <div class="modal-content" style="max-width: 900px; width: 90%; background: var(--bg-secondary);">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-glass); padding-bottom: 12px;">
+                <h3 style="margin: 0; color: var(--text-primary); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="database" style="color: var(--accent-indigo);"></i> 
+                    <span id="dt-modal-title">Data Drilldown</span>
+                </h3>
+                <button id="dt-modal-close" class="btn btn-icon" style="color: var(--text-secondary);"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body" style="max-height: 60vh; overflow-y: auto; margin-top: 16px; padding: 0;">
+                <table class="data-table" id="dt-modal-table" style="width: 100%; border-collapse: collapse;">
+                    <thead style="position: sticky; top: 0; background: var(--bg-card); z-index: 10;">
+                        <tr id="dt-modal-thead"></tr>
+                    </thead>
+                    <tbody id="dt-modal-tbody"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; padding-top: 16px; border-top: 1px solid var(--border-glass); margin-top: 16px;">
+                <button id="dt-modal-download" class="btn btn-primary">
+                    <i data-lucide="download" style="width: 16px; height: 16px; margin-right: 8px;"></i> 
+                    Download CSV
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts (order matters: data → models → app) -->
+    <script src="data.js"></script>
+    <script src="models.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
