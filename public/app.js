@@ -116,6 +116,14 @@
                 overlay.style.display = 'flex';
             });
         }
+        
+        // Notification Logic
+        const notifBtn = document.getElementById('notification-btn');
+        if (notifBtn) {
+            notifBtn.addEventListener('click', () => {
+                alert("You have 3 unread high-priority AI alerts pending review.");
+            });
+        }
 
         // Check if already authenticated
         if (sessionStorage.getItem('isAuthenticated') === 'true') {
