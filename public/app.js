@@ -103,6 +103,20 @@
         const errorMsg = document.getElementById('login-error');
         const loginCard = document.querySelector('.login-card');
 
+        // Logout Logic (Must be attached regardless of auth state)
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                sessionStorage.removeItem('isAuthenticated');
+                usernameInput.value = '';
+                passwordInput.value = '';
+                loginBtn.innerHTML = 'Authenticate Session <i data-lucide="arrow-right" style="width: 16px; height: 16px; margin-left: 8px;"></i>';
+                lucide.createIcons();
+                overlay.classList.remove('fade-out');
+                overlay.style.display = 'flex';
+            });
+        }
+
         // Check if already authenticated
         if (sessionStorage.getItem('isAuthenticated') === 'true') {
             overlay.style.display = 'none';
@@ -138,20 +152,6 @@
         passwordInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') attemptLogin();
         });
-        
-        // Logout Logic
-        const logoutBtn = document.getElementById('logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                sessionStorage.removeItem('isAuthenticated');
-                usernameInput.value = '';
-                passwordInput.value = '';
-                loginBtn.innerHTML = 'Authenticate Session <i data-lucide="arrow-right" style="width: 16px; height: 16px; margin-left: 8px;"></i>';
-                lucide.createIcons();
-                overlay.classList.remove('fade-out');
-                overlay.style.display = 'flex';
-            });
-        }
         usernameInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') passwordInput.focus();
         });
