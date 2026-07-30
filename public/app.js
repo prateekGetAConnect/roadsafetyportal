@@ -72,6 +72,7 @@
         initStaffSlider();
         initDrilldown();
         initMapDrilldown();
+        initProfileBackButtons();
         populateRTOSelector();
         renderCommandCenter();
         renderTopRiskDrivers();
@@ -1963,6 +1964,31 @@
                 }
             }
         });
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  PROFILE BACK BUTTONS
+    // ═══════════════════════════════════════════════════════════════
+    function initProfileBackButtons() {
+        const driverBackBtn = document.getElementById('driver-back-btn');
+        if (driverBackBtn) {
+            driverBackBtn.addEventListener('click', () => {
+                document.getElementById('driver-profile-section').style.display = 'none';
+                document.getElementById('driver-default-view').style.display = 'block';
+                const searchInput = document.getElementById('driver-search');
+                if(searchInput) searchInput.value = '';
+            });
+        }
+
+        const vehicleBackBtn = document.getElementById('vehicle-back-btn');
+        if (vehicleBackBtn) {
+            vehicleBackBtn.addEventListener('click', () => {
+                document.getElementById('vehicle-profile-section').style.display = 'none';
+                document.getElementById('vehicle-default-view').style.display = 'block';
+                const searchInput = document.getElementById('vehicle-search');
+                if(searchInput) searchInput.value = '';
+            });
+        }
     }
 
 })();
