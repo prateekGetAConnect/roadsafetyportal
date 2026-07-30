@@ -18,7 +18,8 @@
         charts: {},
         map: null,
         mapMarkers: [],
-        alerts: []
+        lastHotspotAnalysis: null,
+        alerts: JSON.parse(localStorage.getItem('transport-alerts') || '[]')
     };
 
     const CHART_COLORS = {
@@ -1823,6 +1824,7 @@
             };
             
             state.alerts.push(newAlert);
+            localStorage.setItem('transport-alerts', JSON.stringify(state.alerts));
             renderActiveAlerts();
             form.reset();
             stateSelect.value = 'All';
@@ -1832,6 +1834,9 @@
 
         // Setup Simulation
         simBtn.addEventListener('click', simulateSevereAccident);
+
+        // Initial render of saved alerts
+        renderActiveAlerts();
     }
 
     function renderActiveAlerts() {
@@ -1862,6 +1867,7 @@
             btn.addEventListener('click', (e) => {
                 const id = e.currentTarget.dataset.id;
                 state.alerts = state.alerts.filter(al => al.id !== id);
+                localStorage.setItem('transport-alerts', JSON.stringify(state.alerts));
                 renderActiveAlerts();
             });
         });
