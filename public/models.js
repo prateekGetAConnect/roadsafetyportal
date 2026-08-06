@@ -478,6 +478,9 @@
           service: friendlyName,
           severity: severity,
           pendingRatio: Math.round(pendingRatio * 100) / 100,
+          pendingCount: svc.pending,
+          receivedCount: svc.received,
+          avgDays: svc.avgProcessingDays,
           recommendation: recommendation
         });
       }

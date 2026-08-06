@@ -728,6 +728,8 @@
                 </div>
                 <div class="bottleneck-detail">
                     <span class="bottleneck-ratio">Pending Ratio: ${(b.pendingRatio * 100).toFixed(1)}%</span>
+                    <span class="bottleneck-stat" style="font-size:0.85rem; color:var(--text-secondary);"><i data-lucide="clock" style="width:12px;height:12px;margin-right:2px;vertical-align:-2px;"></i>${b.avgDays} days avg</span>
+                    <span class="bottleneck-stat" style="font-size:0.85rem; color:var(--text-secondary);"><i data-lucide="alert-circle" style="width:12px;height:12px;margin-right:2px;vertical-align:-2px;"></i>${b.pendingCount} pending</span>
                 </div>
                 <p class="bottleneck-rec"><i data-lucide="lightbulb" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"></i>${b.recommendation}</p>
             </div>
@@ -744,7 +746,10 @@
                     <span class="risk-badge risk-medium">AI</span>
                 </div>
                 <div class="bottleneck-detail">
-                    <span class="bottleneck-ratio" style="color: var(--accent-emerald);">Current: ${staffRec.current} → Optimal: ${staffRec.optimal} (Deficit: ${staffRec.deficit})</span>
+                    <span class="bottleneck-stat" style="color: var(--accent-emerald); font-weight:500; font-size:0.9rem;">
+                        <i data-lucide="users" style="width:14px;height:14px;margin-right:4px;vertical-align:-2px;"></i>
+                        Current: ${staffRec.current} &rarr; Optimal: ${staffRec.optimal} (Deficit: ${staffRec.deficit})
+                    </span>
                 </div>
                 <p class="bottleneck-rec"><i data-lucide="users" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"></i>${staffRec.impact}</p>
             </div>
