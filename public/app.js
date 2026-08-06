@@ -794,7 +794,7 @@
 
         const updateSlider = () => {
             const val = parseInt(slider.value);
-            valueLabel.textContent = '+' + val;
+            valueLabel.textContent = (val > 0 ? '+' : '') + val;
             updateStaffPredictions(val);
         };
 
@@ -830,23 +830,25 @@
         const avgDelay = Object.values(services).reduce((s, v) => s + v.avgProcessingDays, 0) / Object.keys(services).length;
 
         // Simple prediction model
-        const staffRatio = rto.staffCount / (rto.staffCount + additionalStaff);
+        const activeStaff = Math.max(1, rto.staffCount + additionalStaff);
+        const staffRatio = rto.staffCount / activeStaff;
         const predictedDelay = (avgDelay * staffRatio * (1 + 0.05 * additionalStaff / rto.staffCount)).toFixed(1);
         const reduction = Math.round((1 - predictedDelay / avgDelay) * 100);
-        const utilization = Math.min(98, Math.round((rto.testSlots.utilization * 100) * (rto.staffCount / (rto.staffCount + additionalStaff * 0.3)) + additionalStaff * 1.5));
+        const utilization = Math.min(98, Math.max(0, Math.round((rto.testSlots.utilization * 100) * (rto.staffCount / activeStaff) + additionalStaff * 1.5)));
 
         const totalReceived = Object.values(services).reduce((s, v) => s + v.received, 0);
         const totalProcessed = Object.values(services).reduce((s, v) => s + v.processed, 0);
         const currentClearance = Math.round(totalProcessed / totalReceived * 100);
-        const predictedClearance = Math.min(99, currentClearance + additionalStaff * 1.2);
+        const predictedClearance = Math.min(99, Math.max(0, currentClearance + additionalStaff * 1.2));
 
-        document.getElementById('rto-predicted-delay').textContent = predictedDelay + ' days';
-        document.getElementById('rto-delay-change').textContent = additionalStaff > 0 ? `↓ ${Math.abs(reduction)}% reduction` : '';
-        document.getElementById('rto-delay-change').className = 'prediction-change ' + (additionalStaff > 0 ? 'positive' : '');
+        document.getElementById('rto-predicted-delay').textContent = Math.max(0, predictedDelay) + ' days';
+        document.getElementById('rto-delay-change').textContent = additionalStaff !== 0 ? (reduction >= 0 ? `↓ ${Math.abs(reduction)}% reduction` : `↑ ${Math.abs(reduction)}% increase`) : '';
+        document.getElementById('rto-delay-change').className = 'prediction-change ' + (reduction >= 0 ? 'positive' : 'negative');
 
         document.getElementById('rto-predicted-clearance').textContent = predictedClearance.toFixed(1) + '%';
-        document.getElementById('rto-clearance-change').textContent = additionalStaff > 0 ? `↑ ${(predictedClearance - currentClearance).toFixed(1)}%` : '';
-        document.getElementById('rto-clearance-change').className = 'prediction-change ' + (additionalStaff > 0 ? 'positive' : '');
+        const clearanceDiff = predictedClearance - currentClearance;
+        document.getElementById('rto-clearance-change').textContent = additionalStaff !== 0 ? (clearanceDiff >= 0 ? `↑ ${clearanceDiff.toFixed(1)}%` : `↓ ${Math.abs(clearanceDiff).toFixed(1)}%`) : '';
+        document.getElementById('rto-clearance-change').className = 'prediction-change ' + (clearanceDiff >= 0 ? 'positive' : 'negative');
 
         document.getElementById('rto-predicted-utilization').textContent = utilization + '%';
         document.getElementById('rto-utilization-change').textContent = '';
