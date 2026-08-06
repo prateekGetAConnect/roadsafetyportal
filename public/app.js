@@ -846,7 +846,7 @@
         const totalReceived = Object.values(services).reduce((s, v) => s + v.received, 0);
         const totalProcessed = Object.values(services).reduce((s, v) => s + v.processed, 0);
         const currentClearance = Math.round(totalProcessed / totalReceived * 100);
-        const predictedClearance = Math.min(99, Math.max(0, currentClearance + additionalStaff * 1.2));
+        const predictedClearance = Math.min(100, Math.max(0, currentClearance + additionalStaff * 1.2));
 
         document.getElementById('rto-predicted-delay').textContent = Math.max(0, predictedDelay) + ' days';
         document.getElementById('rto-delay-change').textContent = additionalStaff !== 0 ? (reduction >= 0 ? `↓ ${Math.abs(reduction)}% reduction` : `↑ ${Math.abs(reduction)}% increase`) : '';
@@ -862,7 +862,7 @@
 
         // Update Efficiency Score in Real Time
         const currentEfficiency = rto.efficiencyScore;
-        const newEfficiency = Math.min(99, Math.round(currentEfficiency + additionalStaff * 1.5));
+        const newEfficiency = Math.min(100, Math.round(currentEfficiency + additionalStaff * 1.5));
         const scoreEl = document.getElementById('rto-efficiency-score');
         if (scoreEl) {
             scoreEl.textContent = newEfficiency;
