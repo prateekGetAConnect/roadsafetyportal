@@ -743,8 +743,10 @@
                     <span class="bottleneck-service">Staffing Recommendation</span>
                     <span class="risk-badge risk-medium">AI</span>
                 </div>
-                <p class="bottleneck-rec">Current: ${staffRec.current} → Optimal: ${staffRec.optimal} (Deficit: ${staffRec.deficit})</p>
-                <p class="bottleneck-detail">${staffRec.impact}</p>
+                <div class="bottleneck-detail">
+                    <span class="bottleneck-ratio" style="color: var(--accent-emerald);">Current: ${staffRec.current} → Optimal: ${staffRec.optimal} (Deficit: ${staffRec.deficit})</span>
+                </div>
+                <p class="bottleneck-rec"><i data-lucide="users" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"></i>${staffRec.impact}</p>
             </div>
         `;
 

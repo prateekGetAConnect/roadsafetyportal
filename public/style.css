@@ -2299,3 +2299,112 @@ a:hover {
   from { opacity: 1; transform: translateX(0); }
   to { opacity: 0; transform: translateX(50px); }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   BOTTLENECK ANALYSIS
+   ══════════════════════════════════════════════════════════════════ */
+.bottleneck-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.bottleneck-item {
+  background: rgba(17, 25, 45, 0.4);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.bottleneck-item:hover {
+  background: rgba(17, 25, 45, 0.8);
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+
+.bottleneck-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: var(--accent-red);
+  border-radius: 4px 0 0 4px;
+}
+
+.bottleneck-item:nth-child(2)::before {
+  background: var(--accent-amber);
+}
+
+.bottleneck-item:nth-child(3)::before {
+  background: var(--accent-indigo);
+}
+
+.bottleneck-item.staffing-rec::before {
+  background: var(--accent-emerald);
+}
+
+.bottleneck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.bottleneck-service {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+
+.bottleneck-detail {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.bottleneck-ratio {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bottleneck-rec {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-glass);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.bottleneck-rec i {
+  color: var(--accent-teal);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.bottleneck-item.staffing-rec {
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.bottleneck-item.staffing-rec:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+}
