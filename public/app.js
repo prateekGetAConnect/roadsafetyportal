@@ -723,15 +723,15 @@
         bottleneckDiv.innerHTML = analysis.bottlenecks.map(b => `
             <div class="bottleneck-item">
                 <div class="bottleneck-header">
-                    <span class="bottleneck-service">${b.service}</span>
-                    <span class="risk-badge risk-${b.severity.toLowerCase()}">${b.severity}</span>
+                    <span class="bottleneck-service"><span style="color:var(--text-muted); font-size:0.85rem; margin-right:6px; font-weight:normal;">Category:</span>${b.service}</span>
+                    <span class="risk-badge risk-${b.severity.toLowerCase()}">${b.severity} Issue</span>
                 </div>
                 <div class="bottleneck-detail">
-                    <span class="bottleneck-ratio">Pending Ratio: ${(b.pendingRatio * 100).toFixed(1)}%</span>
+                    <span class="bottleneck-ratio"><span style="color:var(--text-muted); margin-right:4px;">Issue:</span>Pending Ratio ${(b.pendingRatio * 100).toFixed(1)}%</span>
                     <span class="bottleneck-stat" style="font-size:0.85rem; color:var(--text-secondary);"><i data-lucide="clock" style="width:12px;height:12px;margin-right:2px;vertical-align:-2px;"></i>${b.avgDays} days avg</span>
                     <span class="bottleneck-stat" style="font-size:0.85rem; color:var(--text-secondary);"><i data-lucide="alert-circle" style="width:12px;height:12px;margin-right:2px;vertical-align:-2px;"></i>${b.pendingCount} pending</span>
                 </div>
-                <p class="bottleneck-rec"><i data-lucide="lightbulb" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"></i>${b.recommendation}</p>
+                <p class="bottleneck-rec"><i data-lucide="lightbulb" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"></i><strong style="color:var(--text-primary); margin-right:4px; font-weight:600;">Action:</strong>${b.recommendation}</p>
             </div>
         `).join('');
         lucide.createIcons();
