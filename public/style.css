@@ -2320,6 +2320,7 @@ a:hover {
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .bottleneck-item:hover {
