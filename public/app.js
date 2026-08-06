@@ -789,11 +789,36 @@
     function initStaffSlider() {
         const slider = document.getElementById('rto-staff-slider');
         const valueLabel = document.getElementById('rto-staff-slider-value');
-        slider.addEventListener('input', (e) => {
-            const val = parseInt(e.target.value);
+        const btnMinus = document.getElementById('btn-staff-minus');
+        const btnPlus = document.getElementById('btn-staff-plus');
+
+        const updateSlider = () => {
+            const val = parseInt(slider.value);
             valueLabel.textContent = '+' + val;
             updateStaffPredictions(val);
-        });
+        };
+
+        slider.addEventListener('input', updateSlider);
+
+        if (btnMinus) {
+            btnMinus.addEventListener('click', () => {
+                let val = parseInt(slider.value);
+                if (val > parseInt(slider.min)) {
+                    slider.value = val - 1;
+                    updateSlider();
+                }
+            });
+        }
+
+        if (btnPlus) {
+            btnPlus.addEventListener('click', () => {
+                let val = parseInt(slider.value);
+                if (val < parseInt(slider.max)) {
+                    slider.value = val + 1;
+                    updateSlider();
+                }
+            });
+        }
     }
 
     function updateStaffPredictions(additionalStaff) {
@@ -825,6 +850,18 @@
 
         document.getElementById('rto-predicted-utilization').textContent = utilization + '%';
         document.getElementById('rto-utilization-change').textContent = '';
+
+        // Update Efficiency Score in Real Time
+        const currentEfficiency = rto.efficiencyScore;
+        const newEfficiency = Math.min(99, Math.round(currentEfficiency + additionalStaff * 1.5));
+        const scoreEl = document.getElementById('rto-efficiency-score');
+        if (scoreEl) {
+            scoreEl.textContent = newEfficiency;
+            scoreEl.style.color = newEfficiency >= 90 ? 'var(--accent-emerald)' :
+                                  newEfficiency >= 75 ? 'var(--accent-indigo)' :
+                                  newEfficiency >= 60 ? 'var(--accent-amber)' : 'var(--accent-red)';
+            scoreEl.style.transition = 'color 0.3s ease';
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
