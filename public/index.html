@@ -450,7 +450,7 @@
                             <button class="btn-icon" id="btn-staff-plus" style="cursor: pointer; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--text-primary); flex-shrink: 0;"><i data-lucide="plus" style="width: 16px; height: 16px;"></i></button>
                             <span class="staff-slider-value" id="rto-staff-slider-value" style="min-width: 35px; text-align: right; font-weight: 600;">+0</span>
                         </div>
-                        <div class="grid-3" id="rto-prediction-cards" style="margin-top: 20px;">
+                        <div class="grid-4" id="rto-prediction-cards" style="margin-top: 20px;">
                             <div class="card prediction-card">
                                 <span class="prediction-label">Predicted Avg. Delay</span>
                                 <span class="prediction-value" id="rto-predicted-delay">-- days</span>
@@ -465,6 +465,11 @@
                                 <span class="prediction-label">Staff Utilisation</span>
                                 <span class="prediction-value" id="rto-predicted-utilization">-- %</span>
                                 <span class="prediction-change" id="rto-utilization-change"></span>
+                            </div>
+                            <div class="card prediction-card">
+                                <span class="prediction-label">Budget Impact</span>
+                                <span class="prediction-value" id="rto-predicted-cost">₹0 / mo</span>
+                                <span class="prediction-change" id="rto-cost-change"></span>
                             </div>
                         </div>
                     </div>
@@ -1110,8 +1115,8 @@
     <div id="toast-container" class="toast-container"></div>
 
     <!-- Scripts (order matters: data → models → app) -->
-    <script src="data.js?v=1.4"></script>
-    <script src="models.js?v=1.4"></script>
-    <script src="app.js?v=1.4"></script>
+    <script src="data.js?v=1.5"></script>
+    <script src="models.js?v=1.5"></script>
+    <script src="app.js?v=1.5"></script>
 </body>
 </html>

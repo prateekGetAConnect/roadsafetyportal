@@ -860,6 +860,15 @@
         document.getElementById('rto-predicted-utilization').textContent = utilization + '%';
         document.getElementById('rto-utilization-change').textContent = '';
 
+        // Budget Impact calculation (Assumed ₹45,000 per mo salary)
+        const costPerStaff = 45000;
+        const totalCostChange = additionalStaff * costPerStaff;
+        const formattedCost = new Intl.NumberFormat('en-IN').format(Math.abs(totalCostChange));
+        
+        document.getElementById('rto-predicted-cost').textContent = additionalStaff === 0 ? '₹0 / mo' : (additionalStaff > 0 ? `+₹${formattedCost} / mo` : `-₹${formattedCost} / mo`);
+        document.getElementById('rto-cost-change').textContent = additionalStaff !== 0 ? (additionalStaff > 0 ? `Cost Increase` : `Budget Savings`) : '';
+        document.getElementById('rto-cost-change').className = 'prediction-change ' + (additionalStaff > 0 ? 'negative' : 'positive');
+
         // Update Efficiency Score in Real Time
         const currentEfficiency = rto.efficiencyScore;
         const newEfficiency = Math.min(100, Math.round(currentEfficiency + additionalStaff * 1.5));
