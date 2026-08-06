@@ -2409,3 +2409,11 @@ a:hover {
 .bottleneck-item.staffing-rec:hover {
   border-color: rgba(16, 185, 129, 0.4);
 }
+
+.prediction-change.positive {
+  color: var(--accent-emerald);
+}
+
+.prediction-change.negative {
+  color: var(--accent-red);
+}
