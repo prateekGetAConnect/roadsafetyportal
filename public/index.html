@@ -984,12 +984,21 @@
 
             <!-- ═══════════════════════════════════════ TAB 6: RTO REVENUE ═══════════════════════════════════════ -->
             <div class="tab-pane" id="tab-rto-revenue">
-                <div class="header-banner" style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
+                <div class="header-banner" style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+                    <div style="flex-grow: 1;">
                         <h2>RTO Revenue Analytics</h2>
                         <p class="text-secondary" style="margin-top: 4px;">Track revenue from registrations, licenses, fines, and taxes</p>
                     </div>
-                    <div>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end;">
+                        <select id="revenue-source-filter" class="role-selector">
+                            <option value="All">All Sources</option>
+                            <!-- Dynamic -->
+                        </select>
+                        <select id="revenue-vehicle-type-filter" class="role-selector">
+                            <option value="All">All Vehicle Types</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Commercial">Commercial</option>
+                        </select>
                         <select id="revenue-rto-filter" class="role-selector">
                             <option value="All">All RTOs</option>
                             <!-- Dynamic -->
@@ -1069,6 +1078,7 @@
                                     <th>State</th>
                                     <th>RTO Office</th>
                                     <th>Source</th>
+                                    <th>Vehicle Type</th>
                                     <th style="text-align: right;">Amount (₹)</th>
                                 </tr>
                             </thead>

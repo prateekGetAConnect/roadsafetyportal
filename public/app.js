@@ -206,6 +206,8 @@
                 }
                 if (tab === 'rto-revenue' && !state.revenueInited) {
                     populateRevenueRTOSelector();
+                    populateRevenueSourceSelector();
+                    initRevenueVehicleTypeFilter();
                     renderRTORevenue();
                     state.revenueInited = true;
                 }
@@ -250,6 +252,7 @@
             }
             if (state.revenueInited) {
                 populateRevenueRTOSelector();
+                populateRevenueSourceSelector();
                 renderRTORevenue();
             }
             if (state.mapInited) {
@@ -268,6 +271,7 @@
         }
         if (state.revenueInited) {
             populateRevenueRTOSelector();
+            populateRevenueSourceSelector();
             renderRTORevenue();
         }
         if (state.mapInited) {
@@ -1031,6 +1035,43 @@
         });
     }
 
+    function populateRevenueSourceSelector() {
+        const select = document.getElementById('revenue-source-filter');
+        if (!select) return;
+        
+        let txns = filterByState(window.TransportData.revenueTransactions);
+        const sources = [...new Set(txns.map(t => t.source))].sort();
+        
+        const options = ['<option value="All">All Sources</option>'];
+        sources.forEach(s => {
+            options.push(`<option value="${s}">${s}</option>`);
+        });
+        select.innerHTML = options.join('');
+        state.revenueSourceFilter = 'All';
+        
+        const newSelect = select.cloneNode(true);
+        select.parentNode.replaceChild(newSelect, select);
+        
+        newSelect.addEventListener('change', (e) => {
+            state.revenueSourceFilter = e.target.value;
+            renderRTORevenue();
+        });
+    }
+
+    function initRevenueVehicleTypeFilter() {
+        const select = document.getElementById('revenue-vehicle-type-filter');
+        if (!select) return;
+        state.revenueVehicleTypeFilter = 'All';
+        
+        const newSelect = select.cloneNode(true);
+        select.parentNode.replaceChild(newSelect, select);
+        
+        newSelect.addEventListener('change', (e) => {
+            state.revenueVehicleTypeFilter = e.target.value;
+            renderRTORevenue();
+        });
+    }
+
     function renderRTORevenue() {
         if (!window.TransportData.revenueTransactions) return;
         
@@ -1039,6 +1080,12 @@
         
         if (state.revenueRTOFilter && state.revenueRTOFilter !== 'All') {
             txns = txns.filter(t => t.rtoOffice === state.revenueRTOFilter);
+        }
+        if (state.revenueSourceFilter && state.revenueSourceFilter !== 'All') {
+            txns = txns.filter(t => t.source === state.revenueSourceFilter);
+        }
+        if (state.revenueVehicleTypeFilter && state.revenueVehicleTypeFilter !== 'All') {
+            txns = txns.filter(t => t.vehicleCategory === state.revenueVehicleTypeFilter);
         }
 
         if (txns.length === 0) {
@@ -1153,6 +1200,7 @@
                 <td>${t.state}</td>
                 <td>${t.rtoOffice}</td>
                 <td>${sourceHtml}</td>
+                <td>${t.vehicleCategory || '--'}</td>
                 <td style="text-align: right; font-weight: 600; color: var(--text-primary);">₹${formatNumber(t.amount)}</td>
             `;
             tbody.appendChild(tr);

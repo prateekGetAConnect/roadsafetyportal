@@ -131,9 +131,10 @@
 
   // ─── Revenue Data Generation ──────────────────────────────────────────
   var revenueSources = [
-    { name: 'Vehicle Registration', min: 1000, max: 25000, weight: 30 },
-    { name: 'Driving License', min: 500, max: 2000, weight: 25 },
-    { name: 'Traffic Fines', min: 500, max: 10000, weight: 25 },
+    { name: 'Vehicle Registration', min: 1000, max: 25000, weight: 25 },
+    { name: 'Registration Renewal', min: 800, max: 5000, weight: 15 },
+    { name: 'Driving License', min: 500, max: 2000, weight: 20 },
+    { name: 'Traffic Fines', min: 500, max: 10000, weight: 20 },
     { name: 'Road Tax', min: 2000, max: 15000, weight: 10 },
     { name: 'Fitness Certificates', min: 1000, max: 3000, weight: 10 }
   ];
@@ -158,6 +159,9 @@
 
     var amount = randInt(selectedSource.min, selectedSource.max);
     
+    // Assign a vehicle category (mostly personal, some commercial)
+    var vehicleCategory = rand() < 0.3 ? 'Commercial' : 'Personal';
+    
     // Spread dates across 2026
     var date = new Date(2026, randInt(0, 11), randInt(1, 28));
     
@@ -167,6 +171,7 @@
       rtoOffice: rto,
       state: state,
       source: selectedSource.name,
+      vehicleCategory: vehicleCategory,
       amount: amount
     });
   }
