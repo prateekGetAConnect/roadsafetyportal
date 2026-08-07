@@ -1305,8 +1305,8 @@
         let licenseCounts = {};
 
         drivers.forEach(d => {
-            totalAge += d.age;
-            totalExp += d.experience;
+            totalAge += (d.age || 0);
+            totalExp += (d.yearsExperience || d.experience || 0);
             
             // normalize gender to M, F, O for cleaner display if data contains full words
             let g = d.gender.toUpperCase().charAt(0);
