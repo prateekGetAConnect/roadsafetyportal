@@ -704,7 +704,7 @@
     // Monthly trend
     var monthlyTrend = [];
     for (var m = 0; m < 12; m++) {
-      var mReceived = Math.round((totalReceived / 12) * (0.7 + rand() * 0.6));
+      var mReceived = Math.round(totalReceived * (0.8 + rand() * 0.4));
       var mProcessed = Math.round(mReceived * (preset.eff / 100) * (0.8 + rand() * 0.4));
       if (mProcessed > mReceived) mProcessed = mReceived;
       monthlyTrend.push({ month: monthNames[m], received: mReceived, processed: mProcessed });
