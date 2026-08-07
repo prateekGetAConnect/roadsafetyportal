@@ -211,6 +211,10 @@
                     renderRTORevenue();
                     state.revenueInited = true;
                 }
+                if (tab === 'vehicle-risk' && !state.vehicleRiskInited) {
+                    renderVehicleOverallAnalysis();
+                    state.vehicleRiskInited = true;
+                }
                 if (tab === 'accident-hotspot' && !state.mapInited) {
                     setTimeout(() => {
                         initMap();
@@ -255,6 +259,9 @@
                 populateRevenueSourceSelector();
                 renderRTORevenue();
             }
+            if (state.vehicleRiskInited) {
+                renderVehicleOverallAnalysis();
+            }
             if (state.mapInited) {
                 renderAccidentHotspots();
             }
@@ -273,6 +280,9 @@
             populateRevenueRTOSelector();
             populateRevenueSourceSelector();
             renderRTORevenue();
+        }
+        if (state.vehicleRiskInited) {
+            renderVehicleOverallAnalysis();
         }
         if (state.mapInited) {
             renderAccidentHotspots();
@@ -1401,6 +1411,111 @@
     // ═══════════════════════════════════════════════════════════════
     //  VEHICLE RISK (TAB 4)
     // ═══════════════════════════════════════════════════════════════
+    
+    function renderVehicleOverallAnalysis() {
+        const vehicles = filterByState(window.TransportData.vehicles);
+        const allChallans = filterByDate(window.TransportData.challans, 'dateTime');
+
+        if (vehicles.length === 0) return;
+
+        // 1. KPIs
+        const totalVehicles = vehicles.length;
+        const commercialCount = vehicles.filter(v => v.commercialUse).length;
+        const commercialPct = Math.round((commercialCount / totalVehicles) * 100);
+        
+        const totalAge = vehicles.reduce((sum, v) => sum + v.vehicleAge, 0);
+        const avgAge = (totalAge / totalVehicles).toFixed(1);
+
+        // Calculate Risk for all vehicles to get High/Critical risk counts
+        let highRiskCount = 0;
+        let criticalRiskCount = 0;
+        let rtoCriticalCounts = {}; // For chart
+
+        vehicles.forEach(v => {
+            const ch = allChallans.filter(c => c.regNumber === v.regNumber);
+            const scoreObj = window.RiskModels.calculateVehicleRisk(v, ch);
+            if (scoreObj.category === 'High') {
+                highRiskCount++;
+                if (scoreObj.score >= 80) { // define Critical as score >= 80
+                    criticalRiskCount++;
+                    // Try to map back to RTO via owner DL
+                    const owner = window.TransportData.getDriverByDL(v.ownerDL);
+                    const rto = owner ? owner.rtoOffice : 'Unknown RTO';
+                    rtoCriticalCounts[rto] = (rtoCriticalCounts[rto] || 0) + 1;
+                }
+            }
+        });
+
+        document.getElementById('vehicle-total-kpi').textContent = formatNumber(totalVehicles);
+        document.getElementById('vehicle-commercial-kpi').textContent = commercialPct + '%';
+        document.getElementById('vehicle-age-kpi').textContent = avgAge + ' yrs';
+        document.getElementById('vehicle-high-risk-kpi').textContent = formatNumber(highRiskCount);
+        document.getElementById('vehicle-critical-risk-kpi').textContent = formatNumber(criticalRiskCount);
+
+        // 2. Charts
+        
+        // 2A. Fuel Type
+        const fuelCounts = {};
+        vehicles.forEach(v => {
+            fuelCounts[v.fuelType] = (fuelCounts[v.fuelType] || 0) + 1;
+        });
+        const fuelLabels = Object.keys(fuelCounts);
+        const fuelSeries = Object.values(fuelCounts);
+        
+        destroyChart('vehicleFuel');
+        state.charts.vehicleFuel = new ApexCharts(document.getElementById('chart-vehicle-fuel'), {
+            ...APEX_DARK_THEME,
+            series: fuelSeries,
+            chart: { type: 'donut', height: 250, background: 'transparent' },
+            labels: fuelLabels,
+            colors: ['#0ea5e9', '#14b8a6', '#f59e0b', '#8b5cf6'], // Custom colors for fuel
+            plotOptions: { pie: { donut: { size: '65%' } } },
+            legend: { position: 'right', labels: { colors: '#94a3b8' } },
+            dataLabels: { enabled: false }
+        });
+        state.charts.vehicleFuel.render();
+
+        // 2B. Accident Matrix (Vehicles with vs without accidents)
+        const accidentVehicles = vehicles.filter(v => v.accidentCount > 0).length;
+        const noAccidentVehicles = totalVehicles - accidentVehicles;
+        
+        destroyChart('vehicleAccident');
+        state.charts.vehicleAccident = new ApexCharts(document.getElementById('chart-vehicle-accident'), {
+            ...APEX_DARK_THEME,
+            series: [noAccidentVehicles, accidentVehicles],
+            chart: { type: 'donut', height: 250, background: 'transparent' },
+            labels: ['Zero Accidents', 'Had Accidents'],
+            colors: ['#10b981', '#ef4444'], // Green for zero, Red for accidents
+            plotOptions: { pie: { donut: { size: '65%', labels: { show: true, name: { show: true }, value: { show: true } } } } },
+            legend: { position: 'right', labels: { colors: '#94a3b8' } },
+            dataLabels: { enabled: false }
+        });
+        state.charts.vehicleAccident.render();
+
+        // 2C. Critical Risk Vahan by RTO (Bar Chart)
+        let rtoData = Object.keys(rtoCriticalCounts).map(rto => ({
+            rto: rto,
+            count: rtoCriticalCounts[rto]
+        })).sort((a, b) => b.count - a.count).slice(0, 8); // Top 8 RTOs
+        
+        if (rtoData.length === 0) {
+            rtoData = [{rto: 'None', count: 0}]; // Fallback if no critical risk
+        }
+
+        destroyChart('vehicleRtoRisk');
+        state.charts.vehicleRtoRisk = new ApexCharts(document.getElementById('chart-vehicle-rto-risk'), {
+            ...APEX_DARK_THEME,
+            series: [{ name: 'Critical Risk Vehicles', data: rtoData.map(d => d.count) }],
+            chart: { type: 'bar', height: 250, toolbar: { show: false }, background: 'transparent' },
+            plotOptions: { bar: { horizontal: true, borderRadius: 4, colors: { ranges: [{ from: 0, to: 9999, color: '#0ea5e9' }] } } },
+            dataLabels: { enabled: true, textAnchor: 'start', offsetX: 0, style: { colors: ['#fff'] } },
+            xaxis: { categories: rtoData.map(d => d.rto), labels: { style: { colors: '#94a3b8' } } },
+            yaxis: { labels: { style: { colors: '#94a3b8' } } },
+            grid: { borderColor: 'rgba(99, 102, 241, 0.1)' }
+        });
+        state.charts.vehicleRtoRisk.render();
+    }
+
     function renderVehicleProfile(regNumber) {
         const vehicle = window.TransportData.getVehicleByReg(regNumber);
         if (!vehicle) return;

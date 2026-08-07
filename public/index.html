@@ -783,6 +783,52 @@
 
                 <!-- Default: Top Risk Vehicles -->
                 <div id="vehicle-default-view">
+                    <!-- Overall Level Analysis: KPIs -->
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 20px;">
+                        <div class="card kpi-card" style="padding: 16px;">
+                            <span class="kpi-label">Total Vehicles</span>
+                            <div class="kpi-value" id="vehicle-total-kpi">--</div>
+                        </div>
+                        <div class="card kpi-card" style="padding: 16px;">
+                            <span class="kpi-label">Commercial Vehicle %</span>
+                            <div class="kpi-value" id="vehicle-commercial-kpi">--</div>
+                        </div>
+                        <div class="card kpi-card" style="padding: 16px;">
+                            <span class="kpi-label">Avg Vehicle Age</span>
+                            <div class="kpi-value" id="vehicle-age-kpi">--</div>
+                        </div>
+                        <div class="card kpi-card" style="padding: 16px;">
+                            <span class="kpi-label">High Risk Vehicles</span>
+                            <div class="kpi-value" id="vehicle-high-risk-kpi" style="color: var(--accent-red)">--</div>
+                        </div>
+                        <div class="card kpi-card" style="padding: 16px;">
+                            <span class="kpi-label">Critical Risk Vehicles</span>
+                            <div class="kpi-value" id="vehicle-critical-risk-kpi" style="color: var(--accent-red)">--</div>
+                        </div>
+                    </div>
+
+                    <!-- Overall Level Analysis: Charts -->
+                    <div class="grid-3" style="margin-bottom: 20px;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Fuel Type</h3>
+                            </div>
+                            <div id="chart-vehicle-fuel" style="height: 250px;"></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Accident Matrix</h3>
+                            </div>
+                            <div id="chart-vehicle-accident" style="height: 250px;"></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Critical Risk Vahan by RTO</h3>
+                            </div>
+                            <div id="chart-vehicle-rto-risk" style="height: 250px;"></div>
+                        </div>
+                    </div>
+
                     <div class="card" style="padding: 24px 24px 12px 24px !important;">
                         <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
