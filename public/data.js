@@ -278,10 +278,10 @@
       [15, 35, 30, 12, 8]
     );
 
-    var issueYear = 2024 - randInt(1, Math.min(age - 17, 30));
+    var issueYear = 2026 - randInt(1, Math.min(age - 17, 30));
     var issueDate = new Date(issueYear, randInt(0, 11), randInt(1, 28));
     var expiryDate = new Date(issueYear + 20, issueDate.getMonth(), issueDate.getDate());
-    var yearsExp = 2024 - issueYear;
+    var yearsExp = 2026 - issueYear;
 
     // Test attempts: younger = more likely multiple
     var testAttempts;
@@ -295,7 +295,7 @@
     var status;
     if (i < 5) {
       status = 'Suspended';
-    } else if (expiryDate < new Date(2024, 7, 1)) {
+    } else if (expiryDate < new Date(2026, 7, 1)) {
       status = 'Expired';
     } else {
       status = 'Active';
@@ -352,16 +352,16 @@
 
     var catalog = pick(vehicleCatalog[vType]);
     var regYear = randInt(2010, 2023);
-    var vehicleAge = 2024 - regYear;
+    var vehicleAge = 2026 - regYear;
     var regDate = new Date(regYear, randInt(0, 11), randInt(1, 28));
 
     // Fitness validity
     var fitnessYear = regYear + (vType === '2W' ? 15 : 5);
-    while (fitnessYear < 2024) fitnessYear += (vType === '2W' ? 5 : 2);
+    while (fitnessYear < 2026) fitnessYear += (vType === '2W' ? 5 : 2);
     var fitnessExpired = rand() < 0.15;
     var fitnessValid;
     if (fitnessExpired) {
-      fitnessValid = new Date(2024, randInt(0, 5), randInt(1, 28));
+      fitnessValid = new Date(2026, randInt(0, 5), randInt(1, 28));
     } else {
       fitnessValid = new Date(2025 + randInt(0, 2), randInt(0, 11), randInt(1, 28));
     }
@@ -370,7 +370,7 @@
     var puccExpired = rand() < 0.10;
     var puccValid;
     if (puccExpired) {
-      puccValid = new Date(2024, randInt(0, 6), randInt(1, 28));
+      puccValid = new Date(2026, randInt(0, 6), randInt(1, 28));
     } else {
       puccValid = new Date(2025, randInt(0, 11), randInt(1, 28));
     }
@@ -458,7 +458,7 @@
     var payStatus = pickWeighted(['Paid', 'Pending', 'Overdue'], [60, 25, 15]);
 
     // Date/time
-    var challanDate = new Date(2024, randInt(0, 11), randInt(1, 28));
+    var challanDate = new Date(2026, randInt(0, 11), randInt(1, 28));
     var hour = randInt(0, 23);
     var minute = randInt(0, 59);
 
@@ -477,7 +477,7 @@
     if (violation !== 'Red Light Jump' && detection === 'Red-Light Camera') detection = 'Manual';
 
     challans.push({
-      challanId: 'CH-' + stateCode[state] + '-2024-' + pad(i + 1, 6),
+      challanId: 'CH-' + stateCode[state] + '-2026-' + pad(i + 1, 6),
       dateTime: formatDate(challanDate) + 'T' + pad(hour, 2) + ':' + pad(minute, 2) + ':00',
       location: seg.name,
       gps: { lat: seg.gps.lat + (rand() - 0.5) * 0.01, lng: seg.gps.lng + (rand() - 0.5) * 0.01 },
@@ -529,7 +529,7 @@
 
     // Determine season from month
     var accMonth = randInt(0, 11);
-    var accDate = new Date(2024, accMonth, randInt(1, 28));
+    var accDate = new Date(2026, accMonth, randInt(1, 28));
     var season;
     if (accMonth >= 2 && accMonth <= 4) season = 'Summer';
     else if (accMonth >= 5 && accMonth <= 8) season = 'Monsoon';
@@ -562,7 +562,7 @@
     }
 
     accidents.push({
-      accidentId: 'ACC-' + stateCode[seg.state] + '-2024-' + pad(i + 1, 4),
+      accidentId: 'ACC-' + stateCode[seg.state] + '-2026-' + pad(i + 1, 4),
       date: formatDate(accDate),
       time: pad(accHour, 2) + ':' + pad(randInt(0, 59), 2),
       dayOfWeek: daysOfWeek[accDate.getDay()],
@@ -581,7 +581,7 @@
       casualties: casualties,
       injured: injured,
       vehicleRegNumbers: involvedRegs,
-      firNumber: 'FIR-' + stateCode[seg.state] + '-2024-' + pad(randInt(1000, 9999), 4)
+      firNumber: 'FIR-' + stateCode[seg.state] + '-2026-' + pad(randInt(1000, 9999), 4)
     });
 
     // Update vehicle accident counts
