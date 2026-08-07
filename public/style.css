@@ -773,6 +773,15 @@ a:hover {
 /* ══════════════════════════════════════════════════════════════════
    DATA TABLES
    ══════════════════════════════════════════════════════════════════ */
+.table-wrapper {
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+}
+
 .data-table {
   width: 100%;
   border-collapse: separate;
