@@ -791,7 +791,7 @@ a:hover {
   white-space: nowrap;
   position: sticky;
   top: 0;
-  background: var(--bg-card);
+  background: var(--bg-secondary);
   z-index: 2;
 }
 
@@ -1873,7 +1873,7 @@ a:hover {
 }
 
 .drilldown-table-wrapper .data-table th {
-  background: rgba(17, 25, 45, 0.9);
+  background: var(--bg-secondary);
   font-size: 0.65rem;
   padding: 10px 12px;
 }
