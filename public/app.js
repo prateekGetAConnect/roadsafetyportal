@@ -1161,8 +1161,7 @@
             tx = tx.filter(t => t.vehicleCategory === state.revenueVehicleTypeFilter);
         }
 
-        const recentTx = state.selectedRTO === 'All' ? tx : tx.filter(t => t.rtoOffice === state.selectedRTO);
-        state.exportData.revenue = recentTx;
+        state.exportData.revenue = tx;
 
         if (tx.length === 0) {
             document.getElementById('revenue-total-kpi').textContent = '₹0';
