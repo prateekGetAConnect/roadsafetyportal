@@ -1143,9 +1143,13 @@
 
         let scored = drivers.map(d => {
             const ch = allChallans.filter(c => c.dlNumber === d.dlNumber);
-            const risk = window.RiskModels.calculateDriverRisk(d, ch);
-            return { ...d, riskScore: risk.score, riskCategory: risk.category };
+            const score = window.RiskModels.calculateDriverRisk(d, ch);
+            return { ...d, riskScore: score.score, riskCategory: score.category, factors: score.factors, activeChallans: ch.length };
         });
+
+        if (state.driverViolationFilter !== 'All') {
+            scored = scored.filter(d => d.activeChallans > 0);
+        }
 
         if (state.driverRiskFilter !== 'All') {
             scored = scored.filter(d => d.riskCategory === state.driverRiskFilter);
@@ -1237,8 +1241,12 @@
         let scored = vehicles.map(v => {
             const ch = allChallans.filter(c => c.regNumber === v.regNumber);
             const risk = window.RiskModels.calculateVehicleRisk(v, ch);
-            return { ...v, riskScore: risk.score, riskCategory: risk.category };
+            return { ...v, riskScore: risk.score, riskCategory: risk.category, activeChallans: ch.length };
         });
+
+        if (state.vehicleViolationFilter !== 'All') {
+            scored = scored.filter(v => v.activeChallans > 0);
+        }
 
         if (state.vehicleRiskFilter !== 'All') {
             scored = scored.filter(v => v.riskCategory === state.vehicleRiskFilter);
