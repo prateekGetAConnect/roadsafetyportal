@@ -1139,16 +1139,17 @@
 
     function renderTopRiskDrivers() {
         const drivers = filterByState(window.TransportData.drivers);
-        const allChallans = filterByViolation(filterByDate(window.TransportData.challans, 'dateTime'), state.driverViolationFilter);
+        const allChallans = filterByDate(window.TransportData.challans, 'dateTime');
 
         let scored = drivers.map(d => {
             const ch = allChallans.filter(c => c.dlNumber === d.dlNumber);
             const score = window.RiskModels.calculateDriverRisk(d, ch);
-            return { ...d, riskScore: score.score, riskCategory: score.category, factors: score.factors, activeChallans: ch.length };
+            const hasViolation = state.driverViolationFilter === 'All' || ch.some(c => c.violationType === state.driverViolationFilter);
+            return { ...d, riskScore: score.score, riskCategory: score.category, factors: score.factors, activeChallans: ch.length, hasViolation };
         });
 
         if (state.driverViolationFilter !== 'All') {
-            scored = scored.filter(d => d.activeChallans > 0);
+            scored = scored.filter(d => d.hasViolation);
         }
 
         if (state.driverRiskFilter !== 'All') {
@@ -1236,16 +1237,17 @@
             vehicles = vehicles.filter(v => v.type === state.vehicleTypeFilter);
         }
 
-        const allChallans = filterByViolation(filterByDate(window.TransportData.challans, 'dateTime'), state.vehicleViolationFilter);
+        const allChallans = filterByDate(window.TransportData.challans, 'dateTime');
 
         let scored = vehicles.map(v => {
             const ch = allChallans.filter(c => c.regNumber === v.regNumber);
-            const risk = window.RiskModels.calculateVehicleRisk(v, ch);
-            return { ...v, riskScore: risk.score, riskCategory: risk.category, activeChallans: ch.length };
+            const score = window.RiskModels.calculateVehicleRisk(v, ch);
+            const hasViolation = state.vehicleViolationFilter === 'All' || ch.some(c => c.violationType === state.vehicleViolationFilter);
+            return { ...v, riskScore: score.score, riskCategory: score.category, activeChallans: ch.length, hasViolation };
         });
 
         if (state.vehicleViolationFilter !== 'All') {
-            scored = scored.filter(v => v.activeChallans > 0);
+            scored = scored.filter(v => v.hasViolation);
         }
 
         if (state.vehicleRiskFilter !== 'All') {
