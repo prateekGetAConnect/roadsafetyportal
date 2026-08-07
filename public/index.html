@@ -519,20 +519,9 @@
                 <!-- Search -->
                 <div class="card" style="margin-bottom: 20px;">
                     <div class="search-container">
-                        <div class="search-box-wrapper" style="display: flex; gap: 12px; align-items: center;">
-                            <div style="position: relative; flex: 1;">
-                                <i data-lucide="search" class="search-icon"></i>
-                                <input type="text" id="driver-search" class="search-box" placeholder="Search by DL Number or Driver Name (e.g., DL-11...)">
-                            </div>
-                            <div class="header-state-filter" style="margin-left: 0;">
-                                <label for="driver-risk-filter" class="filter-label" style="display: none;">Risk:</label>
-                                <select id="driver-risk-filter" class="role-selector" style="height: 48px; border-radius: 8px;">
-                                    <option value="All">All Risks</option>
-                                    <option value="High">High Risk</option>
-                                    <option value="Medium">Medium Risk</option>
-                                    <option value="Low">Low Risk</option>
-                                </select>
-                            </div>
+                        <div class="search-box-wrapper">
+                            <i data-lucide="search" class="search-icon"></i>
+                            <input type="text" id="driver-search" class="search-box" placeholder="Search by DL Number or Driver Name (e.g., DL-11...)">
                         </div>
                         <div class="search-suggestions" id="driver-suggestions">
                             <!-- Dynamic -->
@@ -636,9 +625,19 @@
                 <!-- Default State: Top Risk Drivers -->
                 <div id="driver-default-view">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Top High-Risk Drivers</h3>
-                            <span class="card-subtitle">AI-identified highest risk profiles</span>
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 class="card-title">Top High-Risk Drivers</h3>
+                                <span class="card-subtitle">AI-identified highest risk profiles</span>
+                            </div>
+                            <div style="display: flex; gap: 12px;">
+                                <select id="driver-risk-filter" class="role-selector">
+                                    <option value="All">All Risks</option>
+                                    <option value="High">High Risk</option>
+                                    <option value="Medium">Medium Risk</option>
+                                    <option value="Low">Low Risk</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="table-wrapper">
                             <table class="data-table">
@@ -1168,8 +1167,8 @@
     <div id="toast-container" class="toast-container"></div>
 
     <!-- Scripts (order matters: data → models → app) -->
-    <script src="data.js?v=1.11"></script>
-    <script src="models.js?v=1.11"></script>
-    <script src="app.js?v=1.11"></script>
+    <script src="data.js?v=1.12"></script>
+    <script src="models.js?v=1.12"></script>
+    <script src="app.js?v=1.12"></script>
 </body>
 </html>
