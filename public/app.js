@@ -23,7 +23,8 @@
         globalDateFilter: '365',
         customStartDate: '',
         customEndDate: '',
-        globalViolationFilter: 'All',
+        driverViolationFilter: 'All',
+        vehicleViolationFilter: 'All',
         driverRiskFilter: 'All',
         vehicleTypeFilter: 'All',
         vehicleRiskFilter: 'High'
@@ -286,11 +287,15 @@
             }
         });
 
-        document.getElementById('global-violation-filter').addEventListener('change', (e) => {
-            state.globalViolationFilter = e.target.value;
-            updateGlobalFiltersAndRender();
+        document.getElementById('driver-violation-filter').addEventListener('change', (e) => {
+            state.driverViolationFilter = e.target.value;
+            renderTopRiskDrivers();
         });
 
+        document.getElementById('vehicle-violation-filter').addEventListener('change', (e) => {
+            state.vehicleViolationFilter = e.target.value;
+            renderTopRiskVehicles();
+        });
         document.getElementById('driver-risk-filter').addEventListener('change', (e) => {
             state.driverRiskFilter = e.target.value;
             renderTopRiskDrivers();
@@ -328,9 +333,9 @@
         return records.filter(r => new Date(r[dateField]) >= cutoff);
     }
 
-    function filterByViolation(arr, fieldName = 'violationType') {
-        if (state.globalViolationFilter === 'All') return arr;
-        return arr.filter(x => x[fieldName] === state.globalViolationFilter);
+    function filterByViolation(arr, filterValue, fieldName = 'violationType') {
+        if (filterValue === 'All') return arr;
+        return arr.filter(x => x[fieldName] === filterValue);
     }
 
     function filterByState(arr) {
@@ -462,7 +467,7 @@
     function renderCommandCenter() {
         const drivers = filterByState(window.TransportData.drivers);
         const vehicles = filterByState(window.TransportData.vehicles);
-        const challans = filterByViolation(filterByDate(filterByState(window.TransportData.challans), 'dateTime'));
+        const challans = filterByDate(filterByState(window.TransportData.challans), 'dateTime');
         const accidents = filterByDate(filterByState(window.TransportData.accidents), 'date');
 
         // KPIs
@@ -646,7 +651,7 @@
         roleLabel.textContent = `for ${roleMap[state.selectedRole]}`;
 
         const accidents = filterByState(window.TransportData.accidents);
-        const challans = filterByViolation(filterByState(window.TransportData.challans));
+        const challans = filterByState(window.TransportData.challans);
         const overdueCount = challans.filter(c => c.paymentStatus === 'Overdue').length;
 
         const rtos = filterByState(window.TransportData.rtoOperations);
@@ -1134,7 +1139,7 @@
 
     function renderTopRiskDrivers() {
         const drivers = filterByState(window.TransportData.drivers);
-        const allChallans = filterByViolation(filterByDate(window.TransportData.challans, 'dateTime'));
+        const allChallans = filterByViolation(filterByDate(window.TransportData.challans, 'dateTime'), state.driverViolationFilter);
 
         let scored = drivers.map(d => {
             const ch = allChallans.filter(c => c.dlNumber === d.dlNumber);
@@ -1227,7 +1232,7 @@
             vehicles = vehicles.filter(v => v.type === state.vehicleTypeFilter);
         }
 
-        const allChallans = filterByViolation(filterByDate(window.TransportData.challans, 'dateTime'));
+        const allChallans = filterByViolation(filterByDate(window.TransportData.challans, 'dateTime'), state.vehicleViolationFilter);
 
         let scored = vehicles.map(v => {
             const ch = allChallans.filter(c => c.regNumber === v.regNumber);

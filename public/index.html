@@ -245,20 +245,6 @@
                         <option value="Karnataka">Karnataka</option>
                     </select>
                 </div>
-                <div class="header-state-filter">
-                    <label for="global-violation-filter" class="filter-label">Reason:</label>
-                    <select id="global-violation-filter" class="role-selector">
-                        <option value="All">All Reasons</option>
-                        <option value="Over Speeding">Over Speeding</option>
-                        <option value="Red Light Jump">Red Light Jump</option>
-                        <option value="Drunk Driving">Drunk Driving</option>
-                        <option value="No Helmet">No Helmet</option>
-                        <option value="Wrong Parking">Wrong Parking</option>
-                        <option value="Reckless Driving">Reckless Driving</option>
-                        <option value="Overloading">Overloading</option>
-                        <option value="No Seatbelt">No Seatbelt</option>
-                    </select>
-                </div>
                 <div class="header-role">
                     <label for="role-selector" class="filter-label">Role:</label>
                     <select id="role-selector" class="role-selector">
@@ -633,7 +619,7 @@
 
                 <!-- Default State: Top Risk Drivers -->
                 <div id="driver-default-view">
-                    <div class="card">
+                    <div class="card" style="padding: 24px !important;">
                         <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
                                 <h3 class="card-title">Top High-Risk Drivers</h3>
@@ -647,6 +633,17 @@
                                     </div>
                                     <div class="search-suggestions" id="driver-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 8px; z-index: 1000; max-height: 300px; overflow-y: auto; margin-top: 4px; box-shadow: var(--shadow-elevated);"></div>
                                 </div>
+                                <select id="driver-violation-filter" class="role-selector">
+                                    <option value="All">All Reasons</option>
+                                    <option value="Over Speeding">Over Speeding</option>
+                                    <option value="Red Light Jump">Red Light Jump</option>
+                                    <option value="Drunk Driving">Drunk Driving</option>
+                                    <option value="No Helmet">No Helmet</option>
+                                    <option value="Wrong Parking">Wrong Parking</option>
+                                    <option value="Reckless Driving">Reckless Driving</option>
+                                    <option value="Overloading">Overloading</option>
+                                    <option value="No Seatbelt">No Seatbelt</option>
+                                </select>
                                 <select id="driver-risk-filter" class="role-selector">
                                     <option value="All">All Risks</option>
                                     <option value="High">High Risk</option>
@@ -779,13 +776,13 @@
 
                 <!-- Default: Top Risk Vehicles -->
                 <div id="vehicle-default-view">
-                    <div class="card">
+                    <div class="card" style="padding: 24px !important;">
                         <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
                                 <h3 class="card-title">Top High-Risk Vehicles</h3>
                                 <span class="card-subtitle">AI-identified highest risk vehicles</span>
                             </div>
-                            <div style="display: flex; gap: 12px; align-items: center; flex: 1; max-width: 600px; justify-content: flex-end;">
+                            <div style="display: flex; gap: 12px; align-items: center; flex: 1; max-width: 750px; justify-content: flex-end;">
                                 <div class="search-container" style="flex: 1; position: relative;">
                                     <div class="search-box-wrapper" style="position: relative;">
                                         <i data-lucide="search" class="search-icon" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);"></i>
@@ -793,6 +790,17 @@
                                     </div>
                                     <div class="search-suggestions" id="vehicle-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 8px; z-index: 1000; max-height: 300px; overflow-y: auto; margin-top: 4px; box-shadow: var(--shadow-elevated);"></div>
                                 </div>
+                                <select id="vehicle-violation-filter" class="role-selector">
+                                    <option value="All">All Reasons</option>
+                                    <option value="Over Speeding">Over Speeding</option>
+                                    <option value="Red Light Jump">Red Light Jump</option>
+                                    <option value="Drunk Driving">Drunk Driving</option>
+                                    <option value="No Helmet">No Helmet</option>
+                                    <option value="Wrong Parking">Wrong Parking</option>
+                                    <option value="Reckless Driving">Reckless Driving</option>
+                                    <option value="Overloading">Overloading</option>
+                                    <option value="No Seatbelt">No Seatbelt</option>
+                                </select>
                                 <select id="vehicle-type-filter" class="role-selector">
                                     <option value="All">All Types</option>
                                     <option value="2W">2W</option>
@@ -1179,8 +1187,8 @@
     <div id="toast-container" class="toast-container"></div>
 
     <!-- Scripts (order matters: data → models → app) -->
-    <script src="data.js?v=1.14"></script>
-    <script src="models.js?v=1.14"></script>
-    <script src="app.js?v=1.14"></script>
+    <script src="data.js?v=1.15"></script>
+    <script src="models.js?v=1.15"></script>
+    <script src="app.js?v=1.15"></script>
 </body>
 </html>
