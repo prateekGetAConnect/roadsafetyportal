@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1.13">
+    <link rel="stylesheet" href="style.css?v=1.14">
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js?v=1.1"></script>
@@ -221,14 +221,20 @@
                 </div>
             </div>
             <div class="header-right">
-                <div class="header-state-filter">
+                <div class="header-state-filter" style="display: flex; gap: 8px; align-items: center;">
                     <label for="global-date-filter" class="filter-label">Timeframe:</label>
                     <select id="global-date-filter" class="role-selector">
                         <option value="365">Last 12 Months</option>
                         <option value="180">Last 6 Months</option>
                         <option value="30">Last 30 Days</option>
                         <option value="7">Last 7 Days</option>
+                        <option value="custom">Custom Date Range</option>
                     </select>
+                    <div id="custom-date-container" style="display: none; gap: 8px; align-items: center;">
+                        <input type="date" id="custom-start-date" class="role-selector" style="padding: 4px 8px;">
+                        <span style="color: var(--text-muted); font-size: 0.8rem;">to</span>
+                        <input type="date" id="custom-end-date" class="role-selector" style="padding: 4px 8px;">
+                    </div>
                 </div>
                 <div class="header-state-filter">
                     <label for="state-filter" class="filter-label">State:</label>
@@ -237,6 +243,20 @@
                         <option value="Delhi">Delhi</option>
                         <option value="Maharashtra">Maharashtra</option>
                         <option value="Karnataka">Karnataka</option>
+                    </select>
+                </div>
+                <div class="header-state-filter">
+                    <label for="global-violation-filter" class="filter-label">Reason:</label>
+                    <select id="global-violation-filter" class="role-selector">
+                        <option value="All">All Reasons</option>
+                        <option value="Over Speeding">Over Speeding</option>
+                        <option value="Red Light Jump">Red Light Jump</option>
+                        <option value="Drunk Driving">Drunk Driving</option>
+                        <option value="No Helmet">No Helmet</option>
+                        <option value="Wrong Parking">Wrong Parking</option>
+                        <option value="Reckless Driving">Reckless Driving</option>
+                        <option value="Overloading">Overloading</option>
+                        <option value="No Seatbelt">No Seatbelt</option>
                     </select>
                 </div>
                 <div class="header-role">
@@ -1159,8 +1179,8 @@
     <div id="toast-container" class="toast-container"></div>
 
     <!-- Scripts (order matters: data → models → app) -->
-    <script src="data.js?v=1.12"></script>
-    <script src="models.js?v=1.12"></script>
-    <script src="app.js?v=1.12"></script>
+    <script src="data.js?v=1.14"></script>
+    <script src="models.js?v=1.14"></script>
+    <script src="app.js?v=1.14"></script>
 </body>
 </html>

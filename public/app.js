@@ -21,6 +21,9 @@
         lastHotspotAnalysis: null,
         alerts: JSON.parse(localStorage.getItem('transport-alerts') || '[]'),
         globalDateFilter: '365',
+        customStartDate: '',
+        customEndDate: '',
+        globalViolationFilter: 'All',
         driverRiskFilter: 'All',
         vehicleTypeFilter: 'All',
         vehicleRiskFilter: 'High'
@@ -245,19 +248,47 @@
         });
     }
 
+    function updateGlobalFiltersAndRender() {
+        renderCommandCenter();
+        renderTopRiskDrivers();
+        renderTopRiskVehicles();
+        if (state.rtoInited) {
+            populateRTOSelector();
+            renderRTOEfficiency();
+        }
+        if (state.mapInited) {
+            renderAccidentHotspots();
+        }
+    }
+
     function initDataFilters() {
         document.getElementById('global-date-filter').addEventListener('change', (e) => {
             state.globalDateFilter = e.target.value;
-            renderCommandCenter();
-            renderTopRiskDrivers();
-            renderTopRiskVehicles();
-            if (state.rtoInited) {
-                populateRTOSelector();
-                renderRTOEfficiency();
+            if (state.globalDateFilter === 'custom') {
+                document.getElementById('custom-date-container').style.display = 'flex';
+            } else {
+                document.getElementById('custom-date-container').style.display = 'none';
+                updateGlobalFiltersAndRender();
             }
-            if (state.mapInited) {
-                renderAccidentHotspots();
+        });
+
+        document.getElementById('custom-start-date').addEventListener('change', (e) => {
+            state.customStartDate = e.target.value;
+            if (state.customStartDate && state.customEndDate) {
+                updateGlobalFiltersAndRender();
             }
+        });
+
+        document.getElementById('custom-end-date').addEventListener('change', (e) => {
+            state.customEndDate = e.target.value;
+            if (state.customStartDate && state.customEndDate) {
+                updateGlobalFiltersAndRender();
+            }
+        });
+
+        document.getElementById('global-violation-filter').addEventListener('change', (e) => {
+            state.globalViolationFilter = e.target.value;
+            updateGlobalFiltersAndRender();
         });
 
         document.getElementById('driver-risk-filter').addEventListener('change', (e) => {
@@ -281,10 +312,25 @@
     // ═══════════════════════════════════════════════════════════════
     function filterByDate(records, dateField) {
         if (state.globalDateFilter === 'all') return records;
+        if (state.globalDateFilter === 'custom') {
+            if (!state.customStartDate || !state.customEndDate) return records;
+            const start = new Date(state.customStartDate);
+            const end = new Date(state.customEndDate);
+            end.setHours(23, 59, 59, 999);
+            return records.filter(r => {
+                const d = new Date(r[dateField]);
+                return d >= start && d <= end;
+            });
+        }
         const days = parseInt(state.globalDateFilter, 10);
         const cutoff = new Date();
         cutoff.setDate(cutoff.getDate() - days);
         return records.filter(r => new Date(r[dateField]) >= cutoff);
+    }
+
+    function filterByViolation(arr, fieldName = 'violationType') {
+        if (state.globalViolationFilter === 'All') return arr;
+        return arr.filter(x => x[fieldName] === state.globalViolationFilter);
     }
 
     function filterByState(arr) {
@@ -416,7 +462,7 @@
     function renderCommandCenter() {
         const drivers = filterByState(window.TransportData.drivers);
         const vehicles = filterByState(window.TransportData.vehicles);
-        const challans = filterByDate(filterByState(window.TransportData.challans), 'dateTime');
+        const challans = filterByViolation(filterByDate(filterByState(window.TransportData.challans), 'dateTime'));
         const accidents = filterByDate(filterByState(window.TransportData.accidents), 'date');
 
         // KPIs
@@ -600,7 +646,7 @@
         roleLabel.textContent = `for ${roleMap[state.selectedRole]}`;
 
         const accidents = filterByState(window.TransportData.accidents);
-        const challans = filterByState(window.TransportData.challans);
+        const challans = filterByViolation(filterByState(window.TransportData.challans));
         const overdueCount = challans.filter(c => c.paymentStatus === 'Overdue').length;
 
         const rtos = filterByState(window.TransportData.rtoOperations);
@@ -1088,7 +1134,7 @@
 
     function renderTopRiskDrivers() {
         const drivers = filterByState(window.TransportData.drivers);
-        const allChallans = filterByDate(window.TransportData.challans, 'dateTime');
+        const allChallans = filterByViolation(filterByDate(window.TransportData.challans, 'dateTime'));
 
         let scored = drivers.map(d => {
             const ch = allChallans.filter(c => c.dlNumber === d.dlNumber);
@@ -1181,7 +1227,7 @@
             vehicles = vehicles.filter(v => v.type === state.vehicleTypeFilter);
         }
 
-        const allChallans = filterByDate(window.TransportData.challans, 'dateTime');
+        const allChallans = filterByViolation(filterByDate(window.TransportData.challans, 'dateTime'));
 
         let scored = vehicles.map(v => {
             const ch = allChallans.filter(c => c.regNumber === v.regNumber);
