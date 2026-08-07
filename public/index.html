@@ -984,9 +984,17 @@
 
             <!-- ═══════════════════════════════════════ TAB 6: RTO REVENUE ═══════════════════════════════════════ -->
             <div class="tab-pane" id="tab-rto-revenue">
-                <div class="header-banner">
-                    <h2>RTO Revenue Analytics</h2>
-                    <p class="text-secondary">Track revenue from registrations, licenses, fines, and taxes</p>
+                <div class="header-banner" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2>RTO Revenue Analytics</h2>
+                        <p class="text-secondary" style="margin-top: 4px;">Track revenue from registrations, licenses, fines, and taxes</p>
+                    </div>
+                    <div>
+                        <select id="revenue-rto-filter" class="role-selector">
+                            <option value="All">All RTOs</option>
+                            <!-- Dynamic -->
+                        </select>
+                    </div>
                 </div>
                 
                 <!-- Revenue KPIs -->

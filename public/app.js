@@ -205,6 +205,7 @@
                     state.rtoInited = true;
                 }
                 if (tab === 'rto-revenue' && !state.revenueInited) {
+                    populateRevenueRTOSelector();
                     renderRTORevenue();
                     state.revenueInited = true;
                 }
@@ -248,6 +249,7 @@
                 renderRTOEfficiency();
             }
             if (state.revenueInited) {
+                populateRevenueRTOSelector();
                 renderRTORevenue();
             }
             if (state.mapInited) {
@@ -265,6 +267,7 @@
             renderRTOEfficiency();
         }
         if (state.revenueInited) {
+            populateRevenueRTOSelector();
             renderRTORevenue();
         }
         if (state.mapInited) {
@@ -1004,11 +1007,39 @@
     // ═══════════════════════════════════════════════════════════════
     //  RTO REVENUE (TAB 6)
     // ═══════════════════════════════════════════════════════════════
+    function populateRevenueRTOSelector() {
+        const select = document.getElementById('revenue-rto-filter');
+        if (!select) return;
+        
+        const rtos = filterByState(window.TransportData.rtoOperations);
+        const options = ['<option value="All">All RTOs</option>'];
+        
+        rtos.forEach(r => {
+            options.push(`<option value="${r.rtoName}">${r.rtoName}</option>`);
+        });
+        
+        select.innerHTML = options.join('');
+        state.revenueRTOFilter = 'All';
+        
+        // Remove old listeners by cloning
+        const newSelect = select.cloneNode(true);
+        select.parentNode.replaceChild(newSelect, select);
+        
+        newSelect.addEventListener('change', (e) => {
+            state.revenueRTOFilter = e.target.value;
+            renderRTORevenue();
+        });
+    }
+
     function renderRTORevenue() {
         if (!window.TransportData.revenueTransactions) return;
         
         let txns = filterByState(window.TransportData.revenueTransactions);
         txns = filterByDate(txns, 'date');
+        
+        if (state.revenueRTOFilter && state.revenueRTOFilter !== 'All') {
+            txns = txns.filter(t => t.rtoOffice === state.revenueRTOFilter);
+        }
 
         if (txns.length === 0) {
             document.getElementById('revenue-total-kpi').textContent = '₹0';
