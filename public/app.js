@@ -760,6 +760,20 @@
         document.getElementById('rto-staff-slider-value').textContent = '+0';
         updateStaffPredictions(0);
 
+        // Populate Slot Metrics
+        const totalSlots = rto.testSlots.total;
+        const availableSlots = totalSlots - rto.testSlots.utilized;
+        const noShowRate = (rto.rtoName.charCodeAt(0) % 10) + 8; // Stable pseudo-random 8-17%
+        
+        const totalEl = document.getElementById('slot-total-val');
+        if (totalEl) totalEl.textContent = totalSlots;
+        
+        const availEl = document.getElementById('slot-avail-val');
+        if (availEl) availEl.textContent = availableSlots;
+        
+        const noShowEl = document.getElementById('slot-noshow-val');
+        if (noShowEl) noShowEl.textContent = noShowRate + '%';
+
         // Test slot utilization radial
         destroyChart('rtoSlots');
         state.charts.rtoSlots = new ApexCharts(document.getElementById('rto-chart-slots'), {
