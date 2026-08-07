@@ -84,7 +84,6 @@
         initRoleSelector();
         initStateFilter();
         initThemeToggle();
-        initMapFilters();
         initExports();
         initDataFilters();
         initSearch('driver');
@@ -710,14 +709,10 @@
                     ]}
                 }
             },
-            xaxis: { max: 100, labels: { style: { colors: '#94a3b8' } } },
+            xaxis: { categories: rtoNames, max: 100, labels: { style: { colors: '#94a3b8' } } },
             yaxis: { labels: { style: { colors: '#e2e8f0', fontSize: '11px' } } },
-            categories: rtoNames,
-            labels: rtoNames,
             dataLabels: { enabled: true, style: { fontSize: '12px', fontFamily: 'JetBrains Mono' } }
         });
-        // Fix: categories needs to be on xaxis for horizontal
-        state.charts.ccRTOEfficiency.updateOptions({ xaxis: { max: 100 }, yaxis: { categories: rtoNames } });
         state.charts.ccRTOEfficiency.render();
 
         // Alerts Table
@@ -1895,6 +1890,7 @@
         const stateSelect = document.getElementById('map-state-select');
         const districtSelect = document.getElementById('map-district-select');
         const areaSelect = document.getElementById('map-area-select');
+        if (!stateSelect || !districtSelect || !areaSelect) return;
         const geo = window.TransportData.geography;
 
         // Populate State dropdown
