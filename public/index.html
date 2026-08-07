@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1.10">
+    <link rel="stylesheet" href="style.css?v=1.13">
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js?v=1.1"></script>
@@ -516,18 +516,7 @@
                     <p class="page-subtitle">AI-powered risk assessment with explainable factors</p>
                 </div>
 
-                <!-- Search -->
-                <div class="card" style="margin-bottom: 20px;">
-                    <div class="search-container">
-                        <div class="search-box-wrapper">
-                            <i data-lucide="search" class="search-icon"></i>
-                            <input type="text" id="driver-search" class="search-box" placeholder="Search by DL Number or Driver Name (e.g., DL-11...)">
-                        </div>
-                        <div class="search-suggestions" id="driver-suggestions">
-                            <!-- Dynamic -->
-                        </div>
-                    </div>
-                </div>
+                <!-- Search moved to table header -->
 
                 <!-- Driver Profile (Hidden until search) -->
                 <div id="driver-profile-section" style="display: none;">
@@ -630,7 +619,14 @@
                                 <h3 class="card-title">Top High-Risk Drivers</h3>
                                 <span class="card-subtitle">AI-identified highest risk profiles</span>
                             </div>
-                            <div style="display: flex; gap: 12px;">
+                            <div style="display: flex; gap: 12px; align-items: center; flex: 1; max-width: 500px; justify-content: flex-end;">
+                                <div class="search-container" style="flex: 1; position: relative;">
+                                    <div class="search-box-wrapper" style="position: relative;">
+                                        <i data-lucide="search" class="search-icon" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);"></i>
+                                        <input type="text" id="driver-search" class="search-box" placeholder="Search DL or Name..." style="width: 100%; background: rgba(17, 25, 45, 0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 10px 16px 10px 42px; font-size: 0.875rem; color: var(--text-primary); outline: none;">
+                                    </div>
+                                    <div class="search-suggestions" id="driver-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 8px; z-index: 1000; max-height: 300px; overflow-y: auto; margin-top: 4px; box-shadow: var(--shadow-elevated);"></div>
+                                </div>
                                 <select id="driver-risk-filter" class="role-selector">
                                     <option value="All">All Risks</option>
                                     <option value="High">High Risk</option>
@@ -668,18 +664,7 @@
                     <p class="page-subtitle">Predictive risk assessment for registered vehicles</p>
                 </div>
 
-                <!-- Search -->
-                <div class="card" style="margin-bottom: 20px;">
-                    <div class="search-container">
-                        <div class="search-box-wrapper">
-                            <i data-lucide="search" class="search-icon"></i>
-                            <input type="text" id="vehicle-search" class="search-box" placeholder="Search by Registration Number or Owner Name (e.g., DL-3C...)">
-                        </div>
-                        <div class="search-suggestions" id="vehicle-suggestions">
-                            <!-- Dynamic -->
-                        </div>
-                    </div>
-                </div>
+                <!-- Search moved to table header -->
 
                 <!-- Vehicle Profile (Hidden until search) -->
                 <div id="vehicle-profile-section" style="display: none;">
@@ -780,7 +765,14 @@
                                 <h3 class="card-title">Top High-Risk Vehicles</h3>
                                 <span class="card-subtitle">AI-identified highest risk vehicles</span>
                             </div>
-                            <div style="display: flex; gap: 12px;">
+                            <div style="display: flex; gap: 12px; align-items: center; flex: 1; max-width: 600px; justify-content: flex-end;">
+                                <div class="search-container" style="flex: 1; position: relative;">
+                                    <div class="search-box-wrapper" style="position: relative;">
+                                        <i data-lucide="search" class="search-icon" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);"></i>
+                                        <input type="text" id="vehicle-search" class="search-box" placeholder="Search Reg or Name..." style="width: 100%; background: rgba(17, 25, 45, 0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 10px 16px 10px 42px; font-size: 0.875rem; color: var(--text-primary); outline: none;">
+                                    </div>
+                                    <div class="search-suggestions" id="vehicle-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 8px; z-index: 1000; max-height: 300px; overflow-y: auto; margin-top: 4px; box-shadow: var(--shadow-elevated);"></div>
+                                </div>
                                 <select id="vehicle-type-filter" class="role-selector">
                                     <option value="All">All Types</option>
                                     <option value="2W">2W</option>
