@@ -79,52 +79,6 @@
     return { name: first + ' ' + pick(surnames), gender: isMale ? 'Male' : 'Female' };
   }
 
-  // ─── Revenue Data Generation ──────────────────────────────────────────
-  var revenueSources = [
-    { name: 'Vehicle Registration', min: 1000, max: 25000, weight: 30 },
-    { name: 'Driving License', min: 500, max: 2000, weight: 25 },
-    { name: 'Traffic Fines', min: 500, max: 10000, weight: 25 },
-    { name: 'Road Tax', min: 2000, max: 15000, weight: 10 },
-    { name: 'Fitness Certificates', min: 1000, max: 3000, weight: 10 }
-  ];
-
-  var revenueTransactions = [];
-  var txnIdCounter = 10000;
-  for (var i = 0; i < 500; i++) {
-    var state = pick(states);
-    var rto = pick(rtosByState[state]);
-    
-    // Pick source based on weight
-    var sourceRand = rand() * 100;
-    var cumulative = 0;
-    var selectedSource = revenueSources[0];
-    for (var j = 0; j < revenueSources.length; j++) {
-      cumulative += revenueSources[j].weight;
-      if (sourceRand <= cumulative) {
-        selectedSource = revenueSources[j];
-        break;
-      }
-    }
-
-    var amount = randInt(selectedSource.min, selectedSource.max);
-    
-    // Spread dates across 2026
-    var date = new Date(2026, randInt(0, 11), randInt(1, 28));
-    
-    revenueTransactions.push({
-      transactionId: 'TXN-' + stateCode[state] + '-' + (++txnIdCounter),
-      date: formatDate(date),
-      rtoOffice: rto,
-      state: state,
-      source: selectedSource.name,
-      amount: amount
-    });
-  }
-  
-  // Sort by date
-  revenueTransactions.sort(function(a, b) {
-    return new Date(a.date) - new Date(b.date);
-  });
 
   // ─── States & RTOs ───────────────────────────────────────────────────
   var states = ['Delhi', 'Maharashtra', 'Karnataka'];
@@ -174,6 +128,53 @@
     { name: 'Bannerghatta Road KM 12', gps: { lat: 12.8780, lng: 77.6020 }, state: 'Karnataka', district: 'Bengaluru Urban', area: 'Bannerghatta' },
     { name: 'Whitefield Main Road', gps: { lat: 12.9698, lng: 77.7499 }, state: 'Karnataka', district: 'Bengaluru Urban', area: 'Whitefield' }
   ];
+
+  // ─── Revenue Data Generation ──────────────────────────────────────────
+  var revenueSources = [
+    { name: 'Vehicle Registration', min: 1000, max: 25000, weight: 30 },
+    { name: 'Driving License', min: 500, max: 2000, weight: 25 },
+    { name: 'Traffic Fines', min: 500, max: 10000, weight: 25 },
+    { name: 'Road Tax', min: 2000, max: 15000, weight: 10 },
+    { name: 'Fitness Certificates', min: 1000, max: 3000, weight: 10 }
+  ];
+
+  var revenueTransactions = [];
+  var txnIdCounter = 10000;
+  for (var i = 0; i < 500; i++) {
+    var state = pick(states);
+    var rto = pick(rtosByState[state]);
+    
+    // Pick source based on weight
+    var sourceRand = rand() * 100;
+    var cumulative = 0;
+    var selectedSource = revenueSources[0];
+    for (var j = 0; j < revenueSources.length; j++) {
+      cumulative += revenueSources[j].weight;
+      if (sourceRand <= cumulative) {
+        selectedSource = revenueSources[j];
+        break;
+      }
+    }
+
+    var amount = randInt(selectedSource.min, selectedSource.max);
+    
+    // Spread dates across 2026
+    var date = new Date(2026, randInt(0, 11), randInt(1, 28));
+    
+    revenueTransactions.push({
+      transactionId: 'TXN-' + stateCode[state] + '-' + (++txnIdCounter),
+      date: formatDate(date),
+      rtoOffice: rto,
+      state: state,
+      source: selectedSource.name,
+      amount: amount
+    });
+  }
+  
+  // Sort by date
+  revenueTransactions.sort(function(a, b) {
+    return new Date(a.date) - new Date(b.date);
+  });
 
   // ─── Vehicle Makes/Models ────────────────────────────────────────────
   var vehicleCatalog = {
@@ -309,7 +310,7 @@
     return pick(prefixes) + pad(randInt(10000000, 99999999), 8);
   }
 
-  // ─── Generate Drivers ────────────────────────────────────────────────
+  // ─── Data Generation (Drivers) ────────────────────────────────────────────────
   var drivers = [];
   var dlSet = {};
   for (var i = 0; i < 10000; i++) {
