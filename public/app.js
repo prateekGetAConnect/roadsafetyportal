@@ -27,7 +27,12 @@
         vehicleViolationFilter: 'All',
         driverRiskFilter: 'All',
         vehicleTypeFilter: 'All',
-        vehicleRiskFilter: 'High'
+        vehicleRiskFilter: 'High',
+        exportData: {
+            drivers: [],
+            vehicles: [],
+            revenue: []
+        }
     };
 
     const CHART_COLORS = {
@@ -43,27 +48,30 @@
         cyan: '#06b6d4'
     };
 
-    const APEX_DARK_THEME = {
-        chart: {
-            background: 'transparent',
-            foreColor: '#94a3b8',
-            fontFamily: 'Inter, sans-serif',
-            toolbar: { show: false },
-            animations: { enabled: true, easing: 'easeinout', speed: 600 }
-        },
-        grid: { borderColor: 'rgba(99,102,241,0.1)', strokeDashArray: 3 },
-        tooltip: {
-            theme: 'dark',
-            style: { fontSize: '12px' },
-            x: { show: true },
-            marker: { show: true }
-        },
-        legend: { labels: { colors: '#94a3b8' }, fontSize: '12px' },
-        states: {
-            hover: { filter: { type: 'lighten', value: 0.1 } },
-            active: { filter: { type: 'darken', value: 0.1 } }
-        }
-    };
+    function getApexTheme() {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        return {
+            chart: {
+                background: 'transparent',
+                foreColor: isLight ? '#475569' : '#94a3b8',
+                fontFamily: 'Inter, sans-serif',
+                toolbar: { show: false },
+                animations: { enabled: true, easing: 'easeinout', speed: 600 }
+            },
+            grid: { borderColor: isLight ? 'rgba(0,0,0,0.1)' : 'rgba(99,102,241,0.1)', strokeDashArray: 3 },
+            tooltip: {
+                theme: isLight ? 'light' : 'dark',
+                style: { fontSize: '12px' },
+                x: { show: true },
+                marker: { show: true }
+            },
+            legend: { labels: { colors: isLight ? '#475569' : '#94a3b8' }, fontSize: '12px' },
+            states: {
+                hover: { filter: { type: 'lighten', value: 0.1 } },
+                active: { filter: { type: 'darken', value: 0.1 } }
+            }
+        };
+    }
 
     // ═══════════════════════════════════════════════════════════════
     //  INITIALISATION
@@ -75,6 +83,9 @@
         initNavigation();
         initRoleSelector();
         initStateFilter();
+        initThemeToggle();
+        initMapFilters();
+        initExports();
         initDataFilters();
         initSearch('driver');
         initSearch('vehicle');
@@ -211,6 +222,10 @@
                     renderRTORevenue();
                     state.revenueInited = true;
                 }
+                if (tab === 'driver-risk' && !state.driverRiskInited) {
+                    renderDriverOverallAnalysis();
+                    state.driverRiskInited = true;
+                }
                 if (tab === 'vehicle-risk' && !state.vehicleRiskInited) {
                     renderVehicleOverallAnalysis();
                     state.vehicleRiskInited = true;
@@ -244,6 +259,37 @@
         });
     }
 
+    function initThemeToggle() {
+        const toggleBtns = document.querySelectorAll('.theme-toggle-btn');
+        
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('transport-theme', theme);
+
+            document.querySelectorAll('.theme-icon-sun').forEach(el => {
+                el.style.display = theme === 'light' ? 'inline-block' : 'none';
+            });
+            document.querySelectorAll('.theme-icon-moon').forEach(el => {
+                el.style.display = theme === 'light' ? 'none' : 'inline-block';
+            });
+            document.querySelectorAll('.theme-toggle-label').forEach(el => {
+                el.textContent = theme === 'light' ? 'Light Mode' : 'Dark Mode';
+            });
+        }
+
+        const savedTheme = localStorage.getItem('transport-theme') || 'dark';
+        applyTheme(savedTheme);
+
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                applyTheme(newTheme);
+                updateGlobalFiltersAndRender();
+            });
+        });
+    }
+
     function initStateFilter() {
         document.getElementById('state-filter').addEventListener('change', (e) => {
             state.selectedState = e.target.value;
@@ -258,6 +304,9 @@
                 populateRevenueRTOSelector();
                 populateRevenueSourceSelector();
                 renderRTORevenue();
+            }
+            if (state.driverRiskInited) {
+                renderDriverOverallAnalysis();
             }
             if (state.vehicleRiskInited) {
                 renderVehicleOverallAnalysis();
@@ -280,6 +329,9 @@
             populateRevenueRTOSelector();
             populateRevenueSourceSelector();
             renderRTORevenue();
+        }
+        if (state.driverRiskInited) {
+            renderDriverOverallAnalysis();
         }
         if (state.vehicleRiskInited) {
             renderVehicleOverallAnalysis();
@@ -427,6 +479,17 @@
         ]
     };
 
+    function initExports() {
+        document.querySelectorAll('.export-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const target = e.target.dataset.export;
+                if (target === 'drivers') downloadCSV(state.exportData.drivers, COLUMNS.drivers, 'Drivers_Report');
+                if (target === 'vehicles') downloadCSV(state.exportData.vehicles, COLUMNS.vehicles, 'Vehicles_Report');
+                if (target === 'revenue') downloadCSV(state.exportData.revenue, [], 'Revenue_Report');
+            });
+        });
+    }
+
     function openDataTableModal(title, data, columns) {
         const modal = document.getElementById('data-table-modal');
         const titleEl = document.getElementById('dt-modal-title');
@@ -466,16 +529,16 @@
     function downloadCSV(data, columns, filename) {
         if (!data || !data.length) return;
         
-        const header = columns.map(c => `"${c.label}"`).join(',');
+        const header = columns.length > 0 ? columns.map(c => `"${c.label}"`).join(',') : Object.keys(data[0]).join(',');
         
         const rows = data.map(row => {
-            return columns.map(c => {
+            return columns.length > 0 ? columns.map(c => {
                 let val = row[c.key];
                 if (val === undefined || val === null) val = '';
                 if (typeof val === 'object') val = JSON.stringify(val);
                 val = String(val).replace(/"/g, '""');
                 return `"${val}"`;
-            }).join(',');
+            }).join(',') : Object.values(row).map(v => `"${String(v).replace(/"/g, '""')}"`).join(',');
         });
 
         const csvString = [header, ...rows].join('\n');
@@ -513,11 +576,11 @@
 
         destroyChart('ccViolations');
         state.charts.ccViolations = new ApexCharts(document.getElementById('cc-chart-violations'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: violationValues,
             labels: violationLabels,
             chart: { 
-                ...APEX_DARK_THEME.chart, 
+                ...getApexTheme().chart, 
                 type: 'donut', 
                 height: 320,
                 events: {
@@ -554,10 +617,10 @@
 
         destroyChart('ccSeverity');
         state.charts.ccSeverity = new ApexCharts(document.getElementById('cc-chart-severity'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: [{ name: 'Accidents', data: [severityMap.Fatal, severityMap.Grievous, severityMap.Minor] }],
             chart: { 
-                ...APEX_DARK_THEME.chart, 
+                ...getApexTheme().chart, 
                 type: 'bar', 
                 height: 320,
                 events: {
@@ -589,11 +652,11 @@
 
         destroyChart('ccDriverRisk');
         state.charts.ccDriverRisk = new ApexCharts(document.getElementById('cc-chart-driver-risk'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: [riskDist.Low, riskDist.Medium, riskDist.High],
             labels: ['Low Risk', 'Medium Risk', 'High Risk'],
             chart: { 
-                ...APEX_DARK_THEME.chart, 
+                ...getApexTheme().chart, 
                 type: 'pie', 
                 height: 300,
                 events: {
@@ -622,10 +685,10 @@
 
         destroyChart('ccRTOEfficiency');
         state.charts.ccRTOEfficiency = new ApexCharts(document.getElementById('cc-chart-rto-efficiency'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: [{ name: 'Efficiency Score', data: rtoScores }],
             chart: { 
-                ...APEX_DARK_THEME.chart, 
+                ...getApexTheme().chart, 
                 type: 'bar', 
                 height: 300,
                 events: {
@@ -813,14 +876,14 @@
 
         destroyChart('rtoServices');
         state.charts.rtoServices = new ApexCharts(document.getElementById('rto-chart-services'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: [
                 { name: 'Received', data: received },
                 { name: 'Processed', data: processed },
                 { name: 'Pending', data: pending }
             ],
             chart: { 
-                ...APEX_DARK_THEME.chart, 
+                ...getApexTheme().chart, 
                 type: 'bar', 
                 height: 350, 
                 stacked: false,
@@ -899,10 +962,10 @@
         // Test slot utilization radial
         destroyChart('rtoSlots');
         state.charts.rtoSlots = new ApexCharts(document.getElementById('rto-chart-slots'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: [Math.round(rto.testSlots.utilization * 100)],
             chart: { 
-                ...APEX_DARK_THEME.chart, 
+                ...getApexTheme().chart, 
                 type: 'radialBar', 
                 height: 260,
                 events: {
@@ -1085,20 +1148,23 @@
     function renderRTORevenue() {
         if (!window.TransportData.revenueTransactions) return;
         
-        let txns = filterByState(window.TransportData.revenueTransactions);
-        txns = filterByDate(txns, 'date');
+        let tx = filterByState(window.TransportData.revenueTransactions);
+        tx = filterByDate(tx, 'date');
         
         if (state.revenueRTOFilter && state.revenueRTOFilter !== 'All') {
-            txns = txns.filter(t => t.rtoOffice === state.revenueRTOFilter);
+            tx = tx.filter(t => t.rtoOffice === state.revenueRTOFilter);
         }
         if (state.revenueSourceFilter && state.revenueSourceFilter !== 'All') {
-            txns = txns.filter(t => t.source === state.revenueSourceFilter);
+            tx = tx.filter(t => t.source === state.revenueSourceFilter);
         }
         if (state.revenueVehicleTypeFilter && state.revenueVehicleTypeFilter !== 'All') {
-            txns = txns.filter(t => t.vehicleCategory === state.revenueVehicleTypeFilter);
+            tx = tx.filter(t => t.vehicleCategory === state.revenueVehicleTypeFilter);
         }
 
-        if (txns.length === 0) {
+        const recentTx = state.selectedRTO === 'All' ? tx : tx.filter(t => t.rtoOffice === state.selectedRTO);
+        state.exportData.revenue = recentTx;
+
+        if (tx.length === 0) {
             document.getElementById('revenue-total-kpi').textContent = '₹0';
             document.getElementById('revenue-source-kpi').textContent = '--';
             document.getElementById('revenue-rto-kpi').textContent = '--';
@@ -1115,7 +1181,7 @@
         let sourceTotals = {};
         let rtoTotals = {};
 
-        txns.forEach(t => {
+        tx.forEach(t => {
             totalRevenue += t.amount;
             
             if (!sourceTotals[t.source]) sourceTotals[t.source] = 0;
@@ -1127,7 +1193,7 @@
 
         // Format total
         document.getElementById('revenue-total-kpi').textContent = '₹' + formatNumber(totalRevenue);
-        document.getElementById('revenue-tx-kpi').textContent = formatNumber(txns.length);
+        document.getElementById('revenue-tx-kpi').textContent = formatNumber(tx.length);
 
         // Highest Source
         let highestSource = Object.keys(sourceTotals).sort((a, b) => sourceTotals[b] - sourceTotals[a])[0];
@@ -1139,7 +1205,7 @@
 
         // 2. Prepare Trend Chart Data (Monthly)
         let monthlyData = {};
-        txns.forEach(t => {
+        tx.forEach(t => {
             let month = t.date.substring(0, 7); // YYYY-MM
             if (!monthlyData[month]) monthlyData[month] = 0;
             monthlyData[month] += t.amount;
@@ -1154,7 +1220,7 @@
 
         destroyChart('revTrend');
         state.charts.revTrend = new ApexCharts(document.getElementById('chart-revenue-trend'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: [{ name: 'Revenue', data: trendSeries }],
             chart: { type: 'area', height: 350, toolbar: { show: false }, background: 'transparent' },
             colors: ['#10b981'],
@@ -1175,7 +1241,7 @@
 
         destroyChart('revSource');
         state.charts.revSource = new ApexCharts(document.getElementById('chart-revenue-source'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: sourceSeries,
             chart: { type: 'donut', height: 350, background: 'transparent' },
             labels: sourceLabels,
@@ -1218,8 +1284,118 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════════════════
     //  DRIVER RISK (TAB 3)
     // ═══════════════════════════════════════════════════════════════
+
+    function renderDriverOverallAnalysis() {
+        const drivers = filterByState(window.TransportData.drivers);
+        const allChallans = filterByDate(window.TransportData.challans, 'dateTime');
+
+        if (drivers.length === 0) return;
+
+        // 1. KPIs
+        const totalDrivers = drivers.length;
+        
+        let totalAge = 0;
+        let totalExp = 0;
+        let highRiskCount = 0;
+        let criticalRiskCount = 0;
+        let rtoCriticalCounts = {}; 
+        let genderCounts = { 'M': 0, 'F': 0, 'O': 0 };
+        let licenseCounts = {};
+
+        drivers.forEach(d => {
+            totalAge += d.age;
+            totalExp += d.experience;
+            
+            // normalize gender to M, F, O for cleaner display if data contains full words
+            let g = d.gender.toUpperCase().charAt(0);
+            if (!['M', 'F', 'O'].includes(g)) g = 'O';
+            genderCounts[g] = (genderCounts[g] || 0) + 1;
+            
+            licenseCounts[d.licenseType] = (licenseCounts[d.licenseType] || 0) + 1;
+
+            const ch = allChallans.filter(c => c.dlNumber === d.dlNumber);
+            const scoreObj = window.RiskModels.calculateDriverRisk(d, ch);
+            if (scoreObj.category === 'High') {
+                highRiskCount++;
+                if (scoreObj.score >= 80) { // Critical >= 80
+                    criticalRiskCount++;
+                    rtoCriticalCounts[d.rtoOffice] = (rtoCriticalCounts[d.rtoOffice] || 0) + 1;
+                }
+            }
+        });
+
+        const avgAge = (totalAge / totalDrivers).toFixed(1);
+        const avgExp = (totalExp / totalDrivers).toFixed(1);
+
+        document.getElementById('driver-total-kpi').textContent = formatNumber(totalDrivers);
+        document.getElementById('driver-age-kpi').textContent = avgAge + ' yrs';
+        document.getElementById('driver-exp-kpi').textContent = avgExp + ' yrs';
+        document.getElementById('driver-high-risk-kpi').textContent = formatNumber(highRiskCount);
+        document.getElementById('driver-critical-risk-kpi').textContent = formatNumber(criticalRiskCount);
+
+        // 2. Charts
+        
+        // 2A. License Type
+        const licenseLabels = Object.keys(licenseCounts);
+        const licenseSeries = Object.values(licenseCounts);
+        
+        destroyChart('driverLicense');
+        state.charts.driverLicense = new ApexCharts(document.getElementById('chart-driver-license'), {
+            ...getApexTheme(),
+            series: licenseSeries,
+            chart: { type: 'donut', height: 250, background: 'transparent' },
+            labels: licenseLabels,
+            colors: ['#0ea5e9', '#14b8a6', '#f59e0b', '#8b5cf6', '#ef4444'], 
+            plotOptions: { pie: { donut: { size: '65%' } } },
+            legend: { position: 'right', labels: { colors: '#94a3b8' } },
+            dataLabels: { enabled: false }
+        });
+        state.charts.driverLicense.render();
+
+        // 2B. Gender
+        const genderLabels = Object.keys(genderCounts).map(g => g === 'M' ? 'Male' : (g === 'F' ? 'Female' : 'Other'));
+        const genderSeries = Object.values(genderCounts);
+        
+        destroyChart('driverGender');
+        state.charts.driverGender = new ApexCharts(document.getElementById('chart-driver-gender'), {
+            ...getApexTheme(),
+            series: genderSeries,
+            chart: { type: 'donut', height: 250, background: 'transparent' },
+            labels: genderLabels,
+            colors: ['#3b82f6', '#ec4899', '#94a3b8'], // Blue for M, Pink for F, Gray for O
+            plotOptions: { pie: { donut: { size: '65%', labels: { show: true, name: { show: true }, value: { show: true } } } } },
+            legend: { position: 'right', labels: { colors: '#94a3b8' } },
+            dataLabels: { enabled: false }
+        });
+        state.charts.driverGender.render();
+
+        // 2C. Critical Risk Drivers by RTO
+        let rtoData = Object.keys(rtoCriticalCounts).map(rto => ({
+            rto: rto,
+            count: rtoCriticalCounts[rto]
+        })).sort((a, b) => b.count - a.count).slice(0, 8);
+        
+        if (rtoData.length === 0) {
+            rtoData = [{rto: 'None', count: 0}]; 
+        }
+
+        destroyChart('driverRtoRisk');
+        state.charts.driverRtoRisk = new ApexCharts(document.getElementById('chart-driver-rto-risk'), {
+            ...getApexTheme(),
+            series: [{ name: 'Critical Risk Drivers', data: rtoData.map(d => d.count) }],
+            chart: { type: 'bar', height: 250, toolbar: { show: false }, background: 'transparent' },
+            plotOptions: { bar: { horizontal: true, borderRadius: 4, colors: { ranges: [{ from: 0, to: 9999, color: '#ef4444' }] } } },
+            dataLabels: { enabled: true, textAnchor: 'start', offsetX: 0, style: { colors: ['#fff'] } },
+            xaxis: { categories: rtoData.map(d => d.rto), labels: { style: { colors: '#94a3b8' } } },
+            yaxis: { labels: { style: { colors: '#94a3b8' } } },
+            grid: { borderColor: 'rgba(99, 102, 241, 0.1)' }
+        });
+        state.charts.driverRtoRisk.render();
+    }
+
     function initSearch(type) {
         const input = document.getElementById(type + '-search');
         const suggestionsDiv = document.getElementById(type + '-suggestions');
@@ -1384,6 +1560,7 @@
 
         scored.sort((a, b) => b.riskScore - a.riskScore);
         const top20 = scored.slice(0, 20);
+        state.exportData.drivers = top20;
 
         const tbody = document.getElementById('driver-top-risk-tbody');
         tbody.innerHTML = top20.map(d => `
@@ -1464,7 +1641,7 @@
         
         destroyChart('vehicleFuel');
         state.charts.vehicleFuel = new ApexCharts(document.getElementById('chart-vehicle-fuel'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: fuelSeries,
             chart: { type: 'donut', height: 250, background: 'transparent' },
             labels: fuelLabels,
@@ -1481,7 +1658,7 @@
         
         destroyChart('vehicleAccident');
         state.charts.vehicleAccident = new ApexCharts(document.getElementById('chart-vehicle-accident'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: [noAccidentVehicles, accidentVehicles],
             chart: { type: 'donut', height: 250, background: 'transparent' },
             labels: ['Zero Accidents', 'Had Accidents'],
@@ -1504,7 +1681,7 @@
 
         destroyChart('vehicleRtoRisk');
         state.charts.vehicleRtoRisk = new ApexCharts(document.getElementById('chart-vehicle-rto-risk'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: [{ name: 'Critical Risk Vehicles', data: rtoData.map(d => d.count) }],
             chart: { type: 'bar', height: 250, toolbar: { show: false }, background: 'transparent' },
             plotOptions: { bar: { horizontal: true, borderRadius: 4, colors: { ranges: [{ from: 0, to: 9999, color: '#0ea5e9' }] } } },
@@ -1590,6 +1767,7 @@
 
         scored.sort((a, b) => b.riskScore - a.riskScore);
         const top20 = scored.slice(0, 20);
+        state.exportData.vehicles = top20;
 
         const tbody = document.getElementById('vehicle-top-risk-tbody');
         tbody.innerHTML = top20.map(v => `
@@ -1641,9 +1819,9 @@
         const colors = factors.map(f => f.direction === 'positive' ? CHART_COLORS.red : CHART_COLORS.emerald);
 
         state.charts[chartKey] = new ApexCharts(document.getElementById(containerId), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: [{ name: 'Impact', data: values }],
-            chart: { ...APEX_DARK_THEME.chart, type: 'bar', height: 320 },
+            chart: { ...getApexTheme().chart, type: 'bar', height: 320 },
             plotOptions: {
                 bar: {
                     horizontal: true, borderRadius: 4, barHeight: '60%',
@@ -1908,10 +2086,10 @@
 
         destroyChart('hotspotTime');
         state.charts.hotspotTime = new ApexCharts(document.getElementById('hotspot-chart-time'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: [{ name: 'Accidents', data: Object.values(timeGroups) }],
             chart: { 
-                ...APEX_DARK_THEME.chart, 
+                ...getApexTheme().chart, 
                 type: 'area', 
                 height: 300,
                 events: {
@@ -1941,11 +2119,11 @@
 
         destroyChart('hotspotCause');
         state.charts.hotspotCause = new ApexCharts(document.getElementById('hotspot-chart-cause'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: causeValues,
             labels: causeLabels,
             chart: { 
-                ...APEX_DARK_THEME.chart, 
+                ...getApexTheme().chart, 
                 type: 'donut', 
                 height: 300,
                 events: {
@@ -2086,11 +2264,11 @@
 
         destroyChart('ddSeverity');
         state.charts.ddSeverity = new ApexCharts(document.getElementById('dd-chart-severity'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: [sevMap.Fatal, sevMap.Grievous, sevMap.Minor],
             labels: ['Fatal', 'Grievous', 'Minor'],
             chart: { 
-                ...APEX_DARK_THEME.chart, 
+                ...getApexTheme().chart, 
                 type: 'donut', 
                 height: 180,
                 events: {
@@ -2123,10 +2301,10 @@
 
         destroyChart('ddCause');
         state.charts.ddCause = new ApexCharts(document.getElementById('dd-chart-cause'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: [{ name: 'Count', data: causeVals }],
             chart: { 
-                ...APEX_DARK_THEME.chart, 
+                ...getApexTheme().chart, 
                 type: 'bar', 
                 height: 180,
                 events: {
@@ -2155,11 +2333,11 @@
 
         destroyChart('ddTime');
         state.charts.ddTime = new ApexCharts(document.getElementById('dd-chart-time'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: timePercents,
             labels: timeLabels,
             chart: { 
-                ...APEX_DARK_THEME.chart, 
+                ...getApexTheme().chart, 
                 type: 'radialBar', 
                 height: 180,
                 events: {
@@ -2207,11 +2385,11 @@
 
         destroyChart('ddWeather');
         state.charts.ddWeather = new ApexCharts(document.getElementById('dd-chart-weather'), {
-            ...APEX_DARK_THEME,
+            ...getApexTheme(),
             series: wValues,
             labels: wLabels,
             chart: { 
-                ...APEX_DARK_THEME.chart, 
+                ...getApexTheme().chart, 
                 type: 'pie', 
                 height: 180,
                 events: {

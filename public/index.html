@@ -150,7 +150,12 @@
                 </button>
             </div>
             
-            <div style="margin-top: 24px; text-align: center; border-top: 1px solid var(--border-glass); padding-top: 16px;">
+            <div style="margin-top: 20px; text-align: center; border-top: 1px solid var(--border-glass); padding-top: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                <button class="theme-toggle-btn" title="Toggle Light/Dark Theme" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border-radius: 20px; background: rgba(99, 102, 241, 0.15); border: 1px solid var(--border-glass); cursor: pointer; color: var(--text-primary); font-weight: 600; font-size: 0.8rem;">
+                    <i data-lucide="sun" class="theme-icon-sun" style="width: 16px; height: 16px; display: none; color: #f59e0b;"></i>
+                    <i data-lucide="moon" class="theme-icon-moon" style="width: 16px; height: 16px; display: inline-block; color: #8b5cf6;"></i>
+                    <span class="theme-toggle-label">Dark Mode</span>
+                </button>
                 <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">Restricted Government Access</p>
             </div>
         </div>
@@ -201,6 +206,11 @@
             </nav>
 
             <div class="sidebar-footer">
+                <button class="theme-toggle-btn" title="Toggle Light/Dark Theme" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 12px; border-radius: 8px; background: rgba(99, 102, 241, 0.12); border: 1px solid var(--border-glass); cursor: pointer; color: var(--text-primary); font-weight: 600; font-size: 0.8rem; margin-bottom: 12px; transition: all 0.2s ease;">
+                    <i data-lucide="sun" class="theme-icon-sun" style="width: 16px; height: 16px; display: none; color: #f59e0b;"></i>
+                    <i data-lucide="moon" class="theme-icon-moon" style="width: 16px; height: 16px; display: inline-block; color: #8b5cf6;"></i>
+                    <span class="theme-toggle-label">Dark Mode</span>
+                </button>
                 <div class="sidebar-footer-info">
                     <i data-lucide="database" style="width:14px;height:14px;"></i>
                     <span>POC Data: Simulated</span>
@@ -258,6 +268,11 @@
                         <option value="rto-head">RTO Head</option>
                     </select>
                 </div>
+                <button class="theme-toggle-btn" title="Toggle Light/Dark Theme" style="display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 20px; background: var(--bg-card); border: 1px solid var(--border-glass); cursor: pointer; transition: all 0.2s ease; margin-right: 8px; color: var(--text-primary);">
+                    <i data-lucide="sun" class="theme-icon-sun" style="width: 16px; height: 16px; display: none; color: #f59e0b;"></i>
+                    <i data-lucide="moon" class="theme-icon-moon" style="width: 16px; height: 16px; display: inline-block; color: #8b5cf6;"></i>
+                    <span class="theme-toggle-label" style="font-size: 0.8rem; font-weight: 600; font-family: var(--font-family);">Dark Mode</span>
+                </button>
                 <button class="btn btn-ghost notification-btn" id="notification-btn" title="Notifications" style="padding: 8px;">
                     <i data-lucide="bell"></i>
                     <span class="notification-badge">3</span>
@@ -623,6 +638,52 @@
 
                 <!-- Default State: Top Risk Drivers -->
                 <div id="driver-default-view">
+                    <!-- Overall Level Analysis: KPIs -->
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 20px;">
+                        <div class="card kpi-card" style="padding: 16px;">
+                            <span class="kpi-label">Total Drivers</span>
+                            <div class="kpi-value" id="driver-total-kpi">--</div>
+                        </div>
+                        <div class="card kpi-card" style="padding: 16px;">
+                            <span class="kpi-label">Avg Driver Age</span>
+                            <div class="kpi-value" id="driver-age-kpi">--</div>
+                        </div>
+                        <div class="card kpi-card" style="padding: 16px;">
+                            <span class="kpi-label">Avg Experience</span>
+                            <div class="kpi-value" id="driver-exp-kpi">--</div>
+                        </div>
+                        <div class="card kpi-card" style="padding: 16px;">
+                            <span class="kpi-label">High Risk Drivers</span>
+                            <div class="kpi-value" id="driver-high-risk-kpi" style="color: var(--accent-red)">--</div>
+                        </div>
+                        <div class="card kpi-card" style="padding: 16px;">
+                            <span class="kpi-label">Critical Risk Drivers</span>
+                            <div class="kpi-value" id="driver-critical-risk-kpi" style="color: var(--accent-red)">--</div>
+                        </div>
+                    </div>
+
+                    <!-- Overall Level Analysis: Charts -->
+                    <div class="grid-3" style="margin-bottom: 20px;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">License Type</h3>
+                            </div>
+                            <div id="chart-driver-license" style="height: 250px;"></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Gender Distribution</h3>
+                            </div>
+                            <div id="chart-driver-gender" style="height: 250px;"></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Critical Risk Drivers by RTO</h3>
+                            </div>
+                            <div id="chart-driver-rto-risk" style="height: 250px;"></div>
+                        </div>
+                    </div>
+
                     <div class="card" style="padding: 24px 24px 12px 24px !important;">
                         <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
@@ -654,6 +715,9 @@
                                     <option value="Medium">Medium Risk</option>
                                     <option value="Low">Low Risk</option>
                                 </select>
+                                <button id="btn-export-drivers" class="btn btn-outline export-btn" data-export="drivers" style="padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                    <i data-lucide="download" style="width: 16px; height: 16px;"></i> Export CSV
+                                </button>
                             </div>
                         </div>
                         <div class="table-wrapper">
@@ -867,6 +931,9 @@
                                     <option value="Medium">Medium Risk</option>
                                     <option value="Low">Low Risk</option>
                                 </select>
+                                <button id="btn-export-vehicles" class="btn btn-outline export-btn" data-export="vehicles" style="padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                    <i data-lucide="download" style="width: 16px; height: 16px;"></i> Export CSV
+                                </button>
                             </div>
                         </div>
                         <div class="table-wrapper">
@@ -1115,8 +1182,11 @@
 
                 <!-- Transactions Table -->
                 <div class="card" style="margin-top: 20px; padding: 24px 24px 12px 24px !important;">
-                    <div class="card-header">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <h3 class="card-title">Recent Transactions</h3>
+                        <button id="btn-export-revenue" class="btn btn-outline export-btn" data-export="revenue" style="padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="download" style="width: 16px; height: 16px;"></i> Export CSV
+                        </button>
                     </div>
                     <div class="table-wrapper">
                         <table class="data-table">

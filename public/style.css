@@ -7,7 +7,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap');
 
 /* ── Design Tokens ────────────────────────────────────────────────── */
-:root {
+:root, [data-theme="dark"] {
   /* Backgrounds */
   --bg-primary: #070b14;
   --bg-secondary: #0d1425;
@@ -49,6 +49,40 @@
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+[data-theme="light"] {
+  /* Backgrounds */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(248, 250, 252, 0.95);
+  --bg-sidebar: rgba(241, 245, 249, 0.95);
+
+  /* Borders */
+  --border-glass: rgba(99, 102, 241, 0.2);
+  --border-glass-hover: rgba(99, 102, 241, 0.4);
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  /* Accents (Keep most identical for brand consistency, but adjust glows for light background) */
+  --accent-indigo: #4f46e5;
+  --accent-indigo-glow: rgba(79, 70, 229, 0.15);
+  --accent-teal: #0d9488;
+  --accent-amber: #d97706;
+  --accent-red: #dc2626;
+  --accent-emerald: #059669;
+  --accent-sky: #0284c7;
+  --accent-violet: #7c3aed;
+  --accent-rose: #e11d48;
+
+  /* Shadows */
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.05), 0 0 0 1px var(--border-glass);
+  --shadow-glow-indigo: 0 0 16px var(--accent-indigo-glow);
+  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 /* ── Reset & Base ─────────────────────────────────────────────────── */
