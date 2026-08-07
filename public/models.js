@@ -106,11 +106,12 @@
     score += ageImpact;
 
     // ── Factor 3: Experience ──
-    var expImpact = Math.max(-20, -2 * driver.yearsExperience);
-    var expDesc = driver.yearsExperience + ' year' + (driver.yearsExperience !== 1 ? 's' : '') + ' of driving experience';
-    if (driver.yearsExperience >= 10) {
+    var yearsExp = driver.yearsExperience !== undefined ? driver.yearsExperience : (driver.experience !== undefined ? driver.experience : 0);
+    var expImpact = Math.max(-20, -2 * yearsExp);
+    var expDesc = yearsExp + ' year' + (yearsExp !== 1 ? 's' : '') + ' of driving experience';
+    if (yearsExp >= 10) {
       expDesc += ' (significantly reduces risk)';
-    } else if (driver.yearsExperience <= 2) {
+    } else if (yearsExp <= 2) {
       expImpact = Math.min(expImpact + 8, 8); // new drivers actually get penalty
       expDesc += ' (very limited experience increases risk)';
     }
