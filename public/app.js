@@ -204,6 +204,10 @@
                     renderRTOEfficiency();
                     state.rtoInited = true;
                 }
+                if (tab === 'rto-revenue' && !state.revenueInited) {
+                    renderRTORevenue();
+                    state.revenueInited = true;
+                }
                 if (tab === 'accident-hotspot' && !state.mapInited) {
                     setTimeout(() => {
                         initMap();
@@ -243,6 +247,9 @@
                 populateRTOSelector();
                 renderRTOEfficiency();
             }
+            if (state.revenueInited) {
+                renderRTORevenue();
+            }
             if (state.mapInited) {
                 renderAccidentHotspots();
             }
@@ -256,6 +263,9 @@
         if (state.rtoInited) {
             populateRTOSelector();
             renderRTOEfficiency();
+        }
+        if (state.revenueInited) {
+            renderRTORevenue();
         }
         if (state.mapInited) {
             renderAccidentHotspots();
@@ -989,6 +999,133 @@
                                   newEfficiency >= 60 ? 'var(--accent-amber)' : 'var(--accent-red)';
             scoreEl.style.transition = 'color 0.3s ease';
         }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  RTO REVENUE (TAB 6)
+    // ═══════════════════════════════════════════════════════════════
+    function renderRTORevenue() {
+        if (!window.TransportData.revenueTransactions) return;
+        
+        let txns = filterByState(window.TransportData.revenueTransactions);
+        txns = filterByDate(txns, 'date');
+
+        if (txns.length === 0) {
+            document.getElementById('revenue-total-kpi').textContent = '₹0';
+            document.getElementById('revenue-source-kpi').textContent = '--';
+            document.getElementById('revenue-rto-kpi').textContent = '--';
+            document.getElementById('revenue-tx-kpi').textContent = '0';
+            document.getElementById('revenue-table-body').innerHTML = '<tr><td colspan="6" style="text-align: center;">No revenue data for selected filters</td></tr>';
+            
+            destroyChart('revTrend');
+            destroyChart('revSource');
+            return;
+        }
+
+        // 1. Calculate KPIs
+        let totalRevenue = 0;
+        let sourceTotals = {};
+        let rtoTotals = {};
+
+        txns.forEach(t => {
+            totalRevenue += t.amount;
+            
+            if (!sourceTotals[t.source]) sourceTotals[t.source] = 0;
+            sourceTotals[t.source] += t.amount;
+
+            if (!rtoTotals[t.rtoOffice]) rtoTotals[t.rtoOffice] = 0;
+            rtoTotals[t.rtoOffice] += t.amount;
+        });
+
+        // Format total
+        document.getElementById('revenue-total-kpi').textContent = '₹' + formatNumber(totalRevenue);
+        document.getElementById('revenue-tx-kpi').textContent = formatNumber(txns.length);
+
+        // Highest Source
+        let highestSource = Object.keys(sourceTotals).sort((a, b) => sourceTotals[b] - sourceTotals[a])[0];
+        document.getElementById('revenue-source-kpi').textContent = highestSource || '--';
+
+        // Top RTO
+        let topRto = Object.keys(rtoTotals).sort((a, b) => rtoTotals[b] - rtoTotals[a])[0];
+        document.getElementById('revenue-rto-kpi').textContent = topRto || '--';
+
+        // 2. Prepare Trend Chart Data (Monthly)
+        let monthlyData = {};
+        txns.forEach(t => {
+            let month = t.date.substring(0, 7); // YYYY-MM
+            if (!monthlyData[month]) monthlyData[month] = 0;
+            monthlyData[month] += t.amount;
+        });
+        
+        let sortedMonths = Object.keys(monthlyData).sort();
+        let trendSeries = sortedMonths.map(m => monthlyData[m]);
+        let trendCategories = sortedMonths.map(m => {
+            const d = new Date(m + '-01');
+            return d.toLocaleString('default', { month: 'short' }) + ' \'' + d.getFullYear().toString().substring(2);
+        });
+
+        destroyChart('revTrend');
+        state.charts.revTrend = new ApexCharts(document.getElementById('chart-revenue-trend'), {
+            ...APEX_DARK_THEME,
+            series: [{ name: 'Revenue', data: trendSeries }],
+            chart: { type: 'area', height: 350, toolbar: { show: false }, background: 'transparent' },
+            colors: ['#10b981'],
+            fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 100] } },
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth', width: 2 },
+            xaxis: { categories: trendCategories },
+            yaxis: { 
+                labels: { formatter: (val) => '₹' + (val / 1000).toFixed(0) + 'k' }
+            },
+            tooltip: { y: { formatter: (val) => '₹' + formatNumber(val) } }
+        });
+        state.charts.revTrend.render();
+
+        // 3. Prepare Source Donut Chart
+        let sourceLabels = Object.keys(sourceTotals);
+        let sourceSeries = Object.values(sourceTotals);
+
+        destroyChart('revSource');
+        state.charts.revSource = new ApexCharts(document.getElementById('chart-revenue-source'), {
+            ...APEX_DARK_THEME,
+            series: sourceSeries,
+            chart: { type: 'donut', height: 350, background: 'transparent' },
+            labels: sourceLabels,
+            colors: ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444', '#0ea5e9'],
+            dataLabels: { enabled: false },
+            legend: { position: 'bottom', labels: { colors: '#94a3b8' } },
+            plotOptions: {
+                pie: {
+                    donut: { size: '70%', labels: { show: true, name: { color: '#94a3b8' }, value: { color: '#e2e8f0', formatter: (val) => '₹' + formatNumber(val) } } }
+                }
+            },
+            tooltip: { y: { formatter: (val) => '₹' + formatNumber(val) } }
+        });
+        state.charts.revSource.render();
+
+        // 4. Render Table
+        const tbody = document.getElementById('revenue-table-body');
+        tbody.innerHTML = '';
+        
+        // Show last 100 transactions max
+        let displayTxns = [...txns].reverse().slice(0, 100);
+        
+        displayTxns.forEach(t => {
+            const tr = document.createElement('tr');
+            
+            // Format source nicely
+            let sourceHtml = `<span class="card-badge">${t.source}</span>`;
+            
+            tr.innerHTML = `
+                <td style="font-family: var(--font-mono); font-size: 0.85rem;">${t.transactionId}</td>
+                <td>${t.date}</td>
+                <td>${t.state}</td>
+                <td>${t.rtoOffice}</td>
+                <td>${sourceHtml}</td>
+                <td style="text-align: right; font-weight: 600; color: var(--text-primary);">₹${formatNumber(t.amount)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
     }
 
     // ═══════════════════════════════════════════════════════════════

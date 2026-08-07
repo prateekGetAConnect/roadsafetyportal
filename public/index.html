@@ -178,6 +178,10 @@
                     <i data-lucide="building-2"></i>
                     <span>RTO Efficiency</span>
                 </button>
+                <button class="nav-item" data-tab="rto-revenue" id="nav-rto-revenue">
+                    <i data-lucide="indian-rupee"></i>
+                    <span>RTO Revenue</span>
+                </button>
                 <button class="nav-item" data-tab="driver-risk" id="nav-driver-risk">
                     <i data-lucide="user-round-search"></i>
                     <span>Driver Risk (Sarathi)</span>
@@ -976,7 +980,99 @@
                 </div>
             </div>
 
-            <!-- ═══════════════════════════════════════ SETTINGS & ALERTS (TAB 6) ═══════════════════════════════════════ -->
+
+
+            <!-- ═══════════════════════════════════════ TAB 6: RTO REVENUE ═══════════════════════════════════════ -->
+            <div class="tab-pane" id="tab-rto-revenue">
+                <div class="header-banner">
+                    <h2>RTO Revenue Analytics</h2>
+                    <p class="text-secondary">Track revenue from registrations, licenses, fines, and taxes</p>
+                </div>
+                
+                <!-- Revenue KPIs -->
+                <div class="grid-4" style="margin-top: 24px;">
+                    <div class="card kpi-card">
+                        <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">
+                            <i data-lucide="indian-rupee"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Total Revenue</span>
+                            <span class="kpi-value" id="revenue-total-kpi">--</span>
+                        </div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-icon" style="background: rgba(99, 102, 241, 0.15); color: var(--accent-indigo);">
+                            <i data-lucide="trending-up"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Highest Source</span>
+                            <span class="kpi-value" id="revenue-source-kpi" style="font-size: 1.25rem;">--</span>
+                        </div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-icon" style="background: rgba(14, 165, 233, 0.15); color: var(--accent-sky);">
+                            <i data-lucide="building"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Top RTO</span>
+                            <span class="kpi-value" id="revenue-rto-kpi" style="font-size: 1.25rem;">--</span>
+                        </div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber);">
+                            <i data-lucide="receipt"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Total Transactions</span>
+                            <span class="kpi-value" id="revenue-tx-kpi">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid-2-1" style="margin-top: 20px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Revenue Trend</h3>
+                            <span class="card-subtitle">Monthly revenue progression</span>
+                        </div>
+                        <div id="chart-revenue-trend" style="height: 350px;"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Revenue by Source</h3>
+                            <span class="card-subtitle">Distribution across categories</span>
+                        </div>
+                        <div id="chart-revenue-source" style="height: 350px;"></div>
+                    </div>
+                </div>
+
+                <!-- Transactions Table -->
+                <div class="card" style="margin-top: 20px; padding: 24px 24px 12px 24px !important;">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Transactions</h3>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Date</th>
+                                    <th>State</th>
+                                    <th>RTO Office</th>
+                                    <th>Source</th>
+                                    <th style="text-align: right;">Amount (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="revenue-table-body">
+                                <!-- Dynamic -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ SETTINGS & ALERTS (TAB 7) ═══════════════════════════════════════ -->
             <div class="tab-pane" id="tab-settings-alerts">
                 <div class="header-banner">
                     <h2>Settings & Alerts</h2>
