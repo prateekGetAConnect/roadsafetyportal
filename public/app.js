@@ -1415,11 +1415,14 @@
         document.getElementById('vehicle-reg').textContent = vehicle.regNumber;
         document.getElementById('vehicle-owner').textContent = vehicle.ownerName;
         document.getElementById('vehicle-type').textContent = vehicle.type;
+        document.getElementById('vehicle-status').textContent = vehicle.status || 'Active';
         document.getElementById('vehicle-fuel').textContent = vehicle.fuelType;
         document.getElementById('vehicle-color').textContent = vehicle.color;
         document.getElementById('vehicle-reg-date').textContent = vehicle.registrationDate;
         document.getElementById('vehicle-age').textContent = vehicle.vehicleAge + ' years';
         document.getElementById('vehicle-commercial').textContent = vehicle.commercialUse ? 'Yes' : 'No';
+        document.getElementById('vehicle-chassis').textContent = vehicle.chassisNumber || '--';
+        document.getElementById('vehicle-engine').textContent = vehicle.engineNumber || '--';
         document.getElementById('vehicle-fitness').textContent = vehicle.fitnessValidTill + (vehicle.fitnessExpired ? ' ⚠️ EXPIRED' : ' ✓');
         document.getElementById('vehicle-pucc').textContent = vehicle.puccValidTill + (vehicle.puccExpired ? ' ⚠️ EXPIRED' : ' ✓');
         document.getElementById('vehicle-insurance').textContent = vehicle.insuranceValidTill;

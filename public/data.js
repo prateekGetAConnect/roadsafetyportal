@@ -432,6 +432,11 @@
     var insValid = new Date(2025, randInt(0, 11), randInt(1, 28));
 
     var isCommercial = vType === 'HMV' || vType === 'BUS' || vType === '3W' || rand() < 0.10;
+    
+    // Status
+    var vehicleStatus = 'Active';
+    if (fitnessExpired && puccExpired) vehicleStatus = 'Blacklisted';
+    else if (fitnessExpired) vehicleStatus = 'Suspended';
 
     vehicles.push({
       regNumber: reg,
@@ -447,6 +452,7 @@
       engineNumber: generateEngine(),
       color: pick(colors),
       state: state,
+      status: vehicleStatus,
       commercialUse: isCommercial,
       fitnessValidTill: formatDate(fitnessValid),
       fitnessExpired: fitnessExpired,
