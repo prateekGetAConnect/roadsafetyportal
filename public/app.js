@@ -1256,7 +1256,7 @@
         tbody.innerHTML = '';
         
         // Show last 100 transactions max
-        let displayTxns = [...txns].reverse().slice(0, 100);
+        let displayTxns = [...tx].reverse().slice(0, 100);
         
         displayTxns.forEach(t => {
             const tr = document.createElement('tr');
