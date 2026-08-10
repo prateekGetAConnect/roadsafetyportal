@@ -205,19 +205,21 @@
                 </button>
             </nav>
 
-            <div class="sidebar-footer">
-                <button class="theme-toggle-btn" title="Toggle Light/Dark Theme" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 12px; border-radius: 8px; background: rgba(99, 102, 241, 0.12); border: 1px solid var(--border-glass); cursor: pointer; color: var(--text-primary); font-weight: 600; font-size: 0.8rem; margin-bottom: 12px; transition: all 0.2s ease;">
+            <div class="sidebar-footer" style="flex-direction: column; align-items: stretch; gap: 12px;">
+                <button class="theme-toggle-btn" title="Toggle Light/Dark Theme" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 12px; border-radius: 8px; background: rgba(99, 102, 241, 0.12); border: 1px solid var(--border-glass); cursor: pointer; color: var(--text-primary); font-weight: 600; font-size: 0.8rem; transition: all 0.2s ease;">
                     <i data-lucide="sun" class="theme-icon-sun" style="width: 16px; height: 16px; display: none; color: #f59e0b;"></i>
                     <i data-lucide="moon" class="theme-icon-moon" style="width: 16px; height: 16px; display: inline-block; color: #8b5cf6;"></i>
                     <span class="theme-toggle-label">Dark Mode</span>
                 </button>
-                <div class="sidebar-footer-info">
-                    <i data-lucide="database" style="width:14px;height:14px;"></i>
-                    <span>POC Data: Simulated</span>
-                </div>
-                <div class="sidebar-footer-info">
-                    <i data-lucide="clock" style="width:14px;height:14px;"></i>
-                    <span id="sidebar-clock">--:--:--</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--text-muted);">
+                    <div style="display: flex; align-items: center; gap: 4px;" title="POC Data: Simulated">
+                        <i data-lucide="database" style="width:14px;height:14px;"></i>
+                        <span>Simulated Data</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 4px;" title="Current Time">
+                        <i data-lucide="clock" style="width:14px;height:14px;"></i>
+                        <span id="sidebar-clock">--:--:--</span>
+                    </div>
                 </div>
             </div>
         </aside>
