@@ -1537,8 +1537,15 @@
         const drivers = filterByState(window.TransportData.drivers);
         const allChallans = filterByDate(window.TransportData.challans, 'dateTime');
 
+        const challansByDL = {};
+        for (let i = 0; i < allChallans.length; i++) {
+            const c = allChallans[i];
+            if (!challansByDL[c.dlNumber]) challansByDL[c.dlNumber] = [];
+            challansByDL[c.dlNumber].push(c);
+        }
+
         let scored = drivers.map(d => {
-            const ch = allChallans.filter(c => c.dlNumber === d.dlNumber);
+            const ch = challansByDL[d.dlNumber] || [];
             const score = window.RiskModels.calculateDriverRisk(d, ch);
             const hasViolation = state.driverViolationFilter === 'All' || ch.some(c => c.violationType === state.driverViolationFilter);
             return { ...d, riskScore: score.score, riskCategory: score.category, factors: score.factors, activeChallans: ch.length, hasViolation };
@@ -1744,8 +1751,15 @@
 
         const allChallans = filterByDate(window.TransportData.challans, 'dateTime');
 
+        const challansByReg = {};
+        for (let i = 0; i < allChallans.length; i++) {
+            const c = allChallans[i];
+            if (!challansByReg[c.regNumber]) challansByReg[c.regNumber] = [];
+            challansByReg[c.regNumber].push(c);
+        }
+
         let scored = vehicles.map(v => {
-            const ch = allChallans.filter(c => c.regNumber === v.regNumber);
+            const ch = challansByReg[v.regNumber] || [];
             const score = window.RiskModels.calculateVehicleRisk(v, ch);
             const hasViolation = state.vehicleViolationFilter === 'All' || ch.some(c => c.violationType === state.vehicleViolationFilter);
             return { ...v, riskScore: score.score, riskCategory: score.category, activeChallans: ch.length, hasViolation };
