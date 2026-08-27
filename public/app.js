@@ -2980,6 +2980,12 @@
             document.getElementById('v360-dl-type').textContent = driver.licenseType;
             document.getElementById('v360-dl-exp').textContent = `${driver.yearsExperience} Years`;
             document.getElementById('v360-dl-demographics').textContent = `${driver.age} / ${driver.gender.charAt(0)}`;
+            document.getElementById('v360-dl-state').textContent = driver.state;
+            document.getElementById('v360-dl-rto').textContent = driver.rtoOffice;
+            document.getElementById('v360-dl-attempts').textContent = driver.testAttempts;
+            document.getElementById('v360-dl-issue').textContent = driver.issueDate;
+            document.getElementById('v360-dl-expiry').textContent = driver.expiryDate;
+            document.getElementById('v360-dl-accidents').textContent = driver.accidentCount;
             document.getElementById('v360-dl-violations').textContent = driverChallans.length;
             
             const isSuspended = driver.status !== 'Active';
@@ -2992,6 +2998,12 @@
             document.getElementById('v360-dl-type').textContent = '--';
             document.getElementById('v360-dl-exp').textContent = '--';
             document.getElementById('v360-dl-demographics').textContent = '--';
+            document.getElementById('v360-dl-state').textContent = '--';
+            document.getElementById('v360-dl-rto').textContent = '--';
+            document.getElementById('v360-dl-attempts').textContent = '--';
+            document.getElementById('v360-dl-issue').textContent = '--';
+            document.getElementById('v360-dl-expiry').textContent = '--';
+            document.getElementById('v360-dl-accidents').textContent = '--';
             document.getElementById('v360-dl-violations').textContent = '--';
             document.getElementById('v360-driver-status').innerHTML = '';
         }
@@ -3003,6 +3015,14 @@
             document.getElementById('v360-class').textContent = vehicle.type;
             document.getElementById('v360-fuel').textContent = vehicle.fuelType;
             document.getElementById('v360-age').textContent = `${vehicle.vehicleAge} Years`;
+            document.getElementById('v360-veh-regdate').textContent = vehicle.registrationDate;
+            document.getElementById('v360-veh-color').textContent = vehicle.color;
+            document.getElementById('v360-veh-commercial').textContent = vehicle.commercialUse ? 'Yes' : 'No';
+            document.getElementById('v360-veh-fitness').textContent = vehicle.fitnessValidTill;
+            document.getElementById('v360-veh-pucc').textContent = vehicle.puccValidTill;
+            document.getElementById('v360-veh-insurance').textContent = vehicle.insuranceValidTill;
+            document.getElementById('v360-veh-chassis').textContent = vehicle.chassisNumber;
+            document.getElementById('v360-veh-engine').textContent = vehicle.engineNumber;
             document.getElementById('v360-veh-violations').textContent = vehChallans.length;
             
             const isFitnessValid = vehicle.fitnessExpired === false;
@@ -3015,6 +3035,14 @@
             document.getElementById('v360-class').textContent = '--';
             document.getElementById('v360-fuel').textContent = '--';
             document.getElementById('v360-age').textContent = '--';
+            document.getElementById('v360-veh-regdate').textContent = '--';
+            document.getElementById('v360-veh-color').textContent = '--';
+            document.getElementById('v360-veh-commercial').textContent = '--';
+            document.getElementById('v360-veh-fitness').textContent = '--';
+            document.getElementById('v360-veh-pucc').textContent = '--';
+            document.getElementById('v360-veh-insurance').textContent = '--';
+            document.getElementById('v360-veh-chassis').textContent = '--';
+            document.getElementById('v360-veh-engine').textContent = '--';
             document.getElementById('v360-veh-violations').textContent = '--';
             document.getElementById('v360-vehicle-status').innerHTML = '';
         }
