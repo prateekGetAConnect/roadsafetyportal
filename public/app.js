@@ -2734,6 +2734,36 @@
                 if(searchInput) searchInput.value = '';
             });
         }
+
+        document.querySelectorAll('.jump-to-360-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const type = btn.dataset.type;
+                let query = '';
+                if (type === 'driver') {
+                    query = document.getElementById('driver-dl').textContent;
+                } else if (type === 'vehicle') {
+                    query = document.getElementById('vehicle-reg').textContent;
+                }
+
+                if (query && query !== '--') {
+                    // Navigate to 360 tab
+                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                    const nav360 = document.querySelector('.nav-item[data-tab="360"]');
+                    if (nav360) nav360.classList.add('active');
+
+                    document.querySelectorAll('.tab-pane').forEach(tab => tab.classList.remove('active'));
+                    const tab360 = document.getElementById('tab-360');
+                    if (tab360) tab360.classList.add('active');
+
+                    // Set input and perform search
+                    const searchInput = document.getElementById('v360-search-input');
+                    if (searchInput) {
+                        searchInput.value = query;
+                        performVehicle360Search(query);
+                    }
+                }
+            });
+        });
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -2742,111 +2772,168 @@
     function initVehicle360() {
         const searchBtn = document.getElementById('v360-search-btn');
         const searchInput = document.getElementById('v360-search-input');
-        const copyBtn = document.getElementById('v360-copy-btn');
         
         searchBtn.addEventListener('click', () => performVehicle360Search(searchInput.value));
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') performVehicle360Search(searchInput.value);
         });
 
-        if (copyBtn) {
-            copyBtn.addEventListener('click', () => {
-                const regNumber = document.getElementById('v360-reg-number').textContent;
-                if (regNumber && regNumber !== '--') {
-                    navigator.clipboard.writeText(regNumber).then(() => {
-                        showToast('Copied to Clipboard', `Registration Number ${regNumber} copied!`, 'success');
+        document.querySelectorAll('.copy-btn-v360').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const targetId = btn.dataset.target;
+                const textToCopy = document.getElementById(targetId).textContent;
+                if (textToCopy && textToCopy !== '--') {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        showToast('Copied to Clipboard', `${textToCopy} copied!`, 'success');
                     }).catch(() => {
                         showToast('Copy Failed', 'Could not copy to clipboard.', 'error');
                     });
                 }
             });
-        }
+        });
     }
 
-    function performVehicle360Search(regNumber) {
-        regNumber = regNumber.trim().toUpperCase();
-        if (!regNumber) return;
+    function performVehicle360Search(queryInput) {
+        const query = queryInput.trim().toUpperCase();
+        if (!query) return;
 
-        const vehicle = window.TransportData.vehicles.find(v => v.regNumber === regNumber);
+        let vehicle = window.TransportData.vehicles.find(v => v.regNumber === query);
+        let driver = window.TransportData.drivers.find(d => d.dlNumber === query);
+
+        if (vehicle && !driver) {
+            driver = window.TransportData.drivers.find(d => d.dlNumber === vehicle.ownerDL);
+        } else if (driver && !vehicle) {
+            vehicle = window.TransportData.vehicles.find(v => v.ownerDL === driver.dlNumber);
+        }
         
         const emptyState = document.getElementById('v360-empty-state');
         const resultsDiv = document.getElementById('v360-results');
         
-        if (!vehicle) {
+        if (!vehicle && !driver) {
             emptyState.style.display = 'block';
             resultsDiv.style.display = 'none';
             emptyState.innerHTML = `
                 <i data-lucide="x-circle" style="width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5; color: var(--accent-red);"></i>
-                <h3 style="color: var(--text-primary); margin-bottom: 8px;">Vehicle Not Found</h3>
-                <p>No vehicle found with Registration Number <strong>${regNumber}</strong>. Please check and try again.</p>
+                <h3 style="color: var(--text-primary); margin-bottom: 8px;">Record Not Found</h3>
+                <p>No records found for <strong>${query}</strong>. Please check and try again.</p>
             `;
             lucide.createIcons();
             return;
         }
 
-        // Restore default empty state (in case we search again later)
-        emptyState.innerHTML = `
-            <i data-lucide="car" style="width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5;"></i>
-            <h3 style="color: var(--text-primary); margin-bottom: 8px;">Vehicle 360 Degree View</h3>
-            <p>Enter a Registration Number above to fetch comprehensive vehicle records, history, and risk profiling.</p>
-        `;
-
         // Hide empty state, show results
         emptyState.style.display = 'none';
         resultsDiv.style.display = 'block';
 
-        // 1. Gather Data
-        const challans = window.TransportData.challans.filter(c => c.regNumber === regNumber);
+        // 1. Calculate Risks
+        const vehChallans = vehicle ? window.TransportData.challans.filter(c => c.regNumber === vehicle.regNumber) : [];
+        const driverChallans = driver ? window.TransportData.challans.filter(c => c.dlNumber === driver.dlNumber) : [];
         
-        // Fix matching accidents where vehicleRegNumbers might not exist
-        const accidents = window.TransportData.accidents.filter(a => {
-            if (!a.vehicleRegNumbers) return false;
-            return a.vehicleRegNumbers.includes(regNumber);
-        });
+        const vehRisk = vehicle ? window.RiskModels.calculateVehicleRisk(vehicle, vehChallans) : null;
+        const driverRisk = driver ? window.RiskModels.calculateDriverRisk(driver, driverChallans) : null;
+
+        let overallScore = 0;
+        let overallCategory = "Low";
         
-        const riskScore = window.RiskModels.calculateVehicleRisk(vehicle, challans);
+        if (vehRisk && driverRisk) {
+            overallScore = Math.round((vehRisk.score + driverRisk.score * 1.5) / 2.5);
+            if (driverRisk.category === 'High' || vehRisk.category === 'High') {
+                overallCategory = 'High';
+                overallScore = Math.max(overallScore, 75);
+            } else if (driverRisk.category === 'Medium' || vehRisk.category === 'Medium') {
+                overallCategory = 'Medium';
+                overallScore = Math.max(overallScore, 40);
+            } else {
+                overallCategory = 'Low';
+            }
+        } else if (vehRisk) {
+            overallScore = vehRisk.score;
+            overallCategory = vehRisk.category;
+        } else if (driverRisk) {
+            overallScore = driverRisk.score;
+            overallCategory = driverRisk.category;
+        }
 
-        // 2. Populate Profile
-        document.getElementById('v360-reg-number').textContent = vehicle.regNumber;
-        document.getElementById('v360-make-model').textContent = `${vehicle.make} ${vehicle.model}`;
-        document.getElementById('v360-owner').textContent = vehicle.ownerName || 'Unknown';
-        document.getElementById('v360-class').textContent = vehicle.type || 'Unknown';
-        document.getElementById('v360-fuel').textContent = vehicle.fuelType || 'Unknown';
-        document.getElementById('v360-age').textContent = vehicle.vehicleAge !== undefined ? `${vehicle.vehicleAge} Years` : 'Unknown';
+        // 2. Populate Driver Profile
+        if (driver) {
+            document.getElementById('v360-dl-number').textContent = driver.dlNumber;
+            document.getElementById('v360-driver-name').textContent = driver.name;
+            document.getElementById('v360-dl-type').textContent = driver.licenseType;
+            document.getElementById('v360-dl-exp').textContent = `${driver.yearsExperience} Years`;
+            document.getElementById('v360-dl-demographics').textContent = `${driver.age} / ${driver.gender.charAt(0)}`;
+            document.getElementById('v360-dl-violations').textContent = driverChallans.length;
+            
+            const isSuspended = driver.status !== 'Active';
+            document.getElementById('v360-driver-status').innerHTML = `
+                <span class="risk-badge" style="background: ${isSuspended ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)'}; color: ${isSuspended ? 'var(--accent-red)' : 'var(--accent-emerald)'}; border: 1px solid ${isSuspended ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)'};">${driver.status}</span>
+            `;
+        } else {
+            document.getElementById('v360-dl-number').textContent = '--';
+            document.getElementById('v360-driver-name').textContent = 'No Driver Linked';
+            document.getElementById('v360-dl-type').textContent = '--';
+            document.getElementById('v360-dl-exp').textContent = '--';
+            document.getElementById('v360-dl-demographics').textContent = '--';
+            document.getElementById('v360-dl-violations').textContent = '--';
+            document.getElementById('v360-driver-status').innerHTML = '';
+        }
 
-        document.getElementById('v360-risk-badge-container').innerHTML = `
-            <span class="risk-badge ${riskBadgeClass(riskScore.score)}" style="font-size: 1rem; padding: 6px 16px;">
-                ${riskScore.category} Risk • ${riskScore.score}
-            </span>
-        `;
+        // 3. Populate Vehicle Profile
+        if (vehicle) {
+            document.getElementById('v360-reg-number').textContent = vehicle.regNumber;
+            document.getElementById('v360-make-model').textContent = `${vehicle.make} ${vehicle.model}`;
+            document.getElementById('v360-class').textContent = vehicle.type;
+            document.getElementById('v360-fuel').textContent = vehicle.fuelType;
+            document.getElementById('v360-age').textContent = `${vehicle.vehicleAge} Years`;
+            document.getElementById('v360-veh-violations').textContent = vehChallans.length;
+            
+            const isFitnessValid = vehicle.fitnessExpired === false;
+            document.getElementById('v360-vehicle-status').innerHTML = `
+                <span class="risk-badge" style="background: ${isFitnessValid ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}; color: ${isFitnessValid ? 'var(--accent-emerald)' : 'var(--accent-red)'}; border: 1px solid ${isFitnessValid ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'};">Fitness: ${isFitnessValid ? 'Valid' : 'Expired'}</span>
+            `;
+        } else {
+            document.getElementById('v360-reg-number').textContent = '--';
+            document.getElementById('v360-make-model').textContent = 'No Vehicle Linked';
+            document.getElementById('v360-class').textContent = '--';
+            document.getElementById('v360-fuel').textContent = '--';
+            document.getElementById('v360-age').textContent = '--';
+            document.getElementById('v360-veh-violations').textContent = '--';
+            document.getElementById('v360-vehicle-status').innerHTML = '';
+        }
 
-        const isPuccValid = vehicle.puccExpired === false;
-        const isFitnessValid = vehicle.fitnessExpired === false;
-        
-        const now = new Date();
-        const insDate = vehicle.insuranceValidTill ? new Date(vehicle.insuranceValidTill) : null;
-        const isInsValid = insDate && insDate > now;
+        // 4. Populate Risk Scores
+        if (driverRisk) {
+            document.getElementById('v360-driver-risk-score').textContent = driverRisk.score;
+            document.getElementById('v360-driver-risk-score').style.color = riskColor(driverRisk.score);
+            document.getElementById('v360-driver-risk-badge').innerHTML = `<span class="risk-badge ${riskBadgeClass(driverRisk.score)}">${driverRisk.category}</span>`;
+        } else {
+            document.getElementById('v360-driver-risk-score').textContent = '--';
+            document.getElementById('v360-driver-risk-badge').innerHTML = '';
+        }
 
-        document.getElementById('v360-status-container').innerHTML = `
-            <span class="risk-badge" style="background: ${isPuccValid ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}; color: ${isPuccValid ? 'var(--accent-emerald)' : 'var(--accent-red)'}; border: 1px solid ${isPuccValid ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'};">PUCC: ${isPuccValid ? 'Valid' : 'Expired'}</span>
-            <span class="risk-badge" style="background: ${isInsValid ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}; color: ${isInsValid ? 'var(--accent-emerald)' : 'var(--accent-red)'}; border: 1px solid ${isInsValid ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'};">Insurance: ${isInsValid ? 'Valid' : 'Expired'}</span>
-            <span class="risk-badge" style="background: ${isFitnessValid ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}; color: ${isFitnessValid ? 'var(--accent-emerald)' : 'var(--accent-red)'}; border: 1px solid ${isFitnessValid ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'};">Fitness: ${isFitnessValid ? 'Valid' : 'Expired'}</span>
-        `;
+        if (vehRisk) {
+            document.getElementById('v360-vehicle-risk-score').textContent = vehRisk.score;
+            document.getElementById('v360-vehicle-risk-score').style.color = riskColor(vehRisk.score);
+            document.getElementById('v360-vehicle-risk-badge').innerHTML = `<span class="risk-badge ${riskBadgeClass(vehRisk.score)}">${vehRisk.category}</span>`;
+        } else {
+            document.getElementById('v360-vehicle-risk-score').textContent = '--';
+            document.getElementById('v360-vehicle-risk-badge').innerHTML = '';
+        }
 
-        // 3. Populate KPIs
-        document.getElementById('v360-kpi-violations').textContent = challans.length;
-        document.getElementById('v360-kpi-accidents').textContent = accidents.length;
-        document.getElementById('v360-kpi-owners').textContent = vehicle.ownershipChanges || 0;
-        document.getElementById('v360-kpi-score').textContent = riskScore.score;
+        document.getElementById('v360-overall-risk-score').textContent = overallScore;
+        document.getElementById('v360-overall-risk-score').style.color = riskColor(overallScore);
+        document.getElementById('v360-overall-risk-badge').innerHTML = `<span class="risk-badge ${riskBadgeClass(overallScore)}">${overallCategory}</span>`;
 
         // 4. Populate Tables
+        const combinedChallans = [...new Map([...vehChallans, ...driverChallans].map(c => [c.challanId, c])).values()];
+        const combinedAccidents = vehicle ? window.TransportData.accidents.filter(a => a.vehicleRegNumbers && a.vehicleRegNumbers.includes(vehicle.regNumber)) : [];
+
         const challanTbody = document.getElementById('v360-challans-tbody');
-        if (challans.length === 0) {
+        if (combinedChallans.length === 0) {
             challanTbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">No challan history found</td></tr>`;
         } else {
-            // Sort challans by date descending
-            challans.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
-            challanTbody.innerHTML = challans.slice(0, 10).map(c => `
+            combinedChallans.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+            challanTbody.innerHTML = combinedChallans.slice(0, 10).map(c => `
                 <tr>
                     <td style="white-space: nowrap;">${new Date(c.dateTime).toLocaleDateString()}</td>
                     <td>${c.violationType}</td>
@@ -2858,12 +2945,11 @@
         }
 
         const accidentTbody = document.getElementById('v360-accidents-tbody');
-        if (accidents.length === 0) {
+        if (combinedAccidents.length === 0) {
             accidentTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">No accident history found</td></tr>`;
         } else {
-            // Sort accidents by date descending
-            accidents.sort((a, b) => new Date(b.date) - new Date(a.date));
-            accidentTbody.innerHTML = accidents.slice(0, 10).map(a => `
+            combinedAccidents.sort((a, b) => new Date(b.date) - new Date(a.date));
+            accidentTbody.innerHTML = combinedAccidents.slice(0, 10).map(a => `
                 <tr>
                     <td style="white-space: nowrap;">${new Date(a.date).toLocaleDateString()}</td>
                     <td><span class="risk-badge risk-${a.severity === 'Fatal' ? 'high' : a.severity === 'Grievous' ? 'medium' : 'low'}">${a.severity}</span></td>
