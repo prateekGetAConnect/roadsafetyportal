@@ -498,9 +498,19 @@
             { key: 'age', label: 'Age' }, { key: 'licenseType', label: 'License' },
             { key: 'violationCount', label: 'Violations' }, { key: 'status', label: 'Status' }
         ],
+        vehicles: [
+            { key: 'regNumber', label: 'Reg Number' }, { key: 'type', label: 'Type' },
+            { key: 'make', label: 'Make' }, { key: 'model', label: 'Model' },
+            { key: 'fuelType', label: 'Fuel' }, { key: 'accidentCount', label: 'Accidents' }
+        ],
         rtos: [
             { key: 'rtoName', label: 'RTO Name' }, { key: 'state', label: 'State' },
             { key: 'staffCount', label: 'Staff Count' }, { key: 'efficiencyScore', label: 'Efficiency' }
+        ],
+        revenue: [
+            { key: 'transactionId', label: 'Txn ID' }, { key: 'date', label: 'Date' },
+            { key: 'rtoOffice', label: 'RTO' }, { key: 'source', label: 'Source' },
+            { key: 'vehicleCategory', label: 'Vehicle' }, { key: 'amount', label: 'Amount (₹)' }
         ]
     };
 
@@ -1263,7 +1273,19 @@
         state.charts.revSource = new ApexCharts(document.getElementById('chart-revenue-source'), {
             ...getApexTheme(),
             series: sourceSeries,
-            chart: { type: 'donut', height: 350, background: 'transparent' },
+            chart: { 
+                type: 'donut', 
+                height: 350, 
+                background: 'transparent',
+                events: {
+                    dataPointSelection: function(e, chart, config) {
+                        if (config.dataPointIndex === undefined) return;
+                        const source = sourceLabels[config.dataPointIndex];
+                        const filtered = tx.filter(t => t.source === source);
+                        openDataTableModal(`Revenue - ${source}`, filtered, COLUMNS.revenue);
+                    }
+                }
+            },
             labels: sourceLabels,
             colors: ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444', '#0ea5e9'],
             dataLabels: { enabled: false },
@@ -1366,7 +1388,19 @@
         state.charts.driverLicense = new ApexCharts(document.getElementById('chart-driver-license'), {
             ...getApexTheme(),
             series: licenseSeries,
-            chart: { type: 'donut', height: 250, background: 'transparent' },
+            chart: { 
+                type: 'donut', 
+                height: 250, 
+                background: 'transparent',
+                events: {
+                    dataPointSelection: function(e, chart, config) {
+                        if (config.dataPointIndex === undefined) return;
+                        const licType = licenseLabels[config.dataPointIndex];
+                        const filtered = drivers.filter(d => d.licenseType === licType);
+                        openDataTableModal(`Drivers - ${licType}`, filtered, COLUMNS.drivers);
+                    }
+                }
+            },
             labels: licenseLabels,
             colors: ['#0ea5e9', '#14b8a6', '#f59e0b', '#8b5cf6', '#ef4444'], 
             plotOptions: { pie: { donut: { size: '65%' } } },
@@ -1383,7 +1417,20 @@
         state.charts.driverGender = new ApexCharts(document.getElementById('chart-driver-gender'), {
             ...getApexTheme(),
             series: genderSeries,
-            chart: { type: 'donut', height: 250, background: 'transparent' },
+            chart: { 
+                type: 'donut', 
+                height: 250, 
+                background: 'transparent',
+                events: {
+                    dataPointSelection: function(e, chart, config) {
+                        if (config.dataPointIndex === undefined) return;
+                        const genderLabel = genderLabels[config.dataPointIndex];
+                        const genderCode = genderLabel === 'Male' ? 'M' : (genderLabel === 'Female' ? 'F' : 'O');
+                        const filtered = drivers.filter(d => d.gender === genderCode);
+                        openDataTableModal(`Drivers - ${genderLabel}`, filtered, COLUMNS.drivers);
+                    }
+                }
+            },
             labels: genderLabels,
             colors: ['#3b82f6', '#ec4899', '#94a3b8'], // Blue for M, Pink for F, Gray for O
             plotOptions: { pie: { donut: { size: '65%', labels: { show: true, name: { show: true }, value: { show: true } } } } },
@@ -1670,7 +1717,19 @@
         state.charts.vehicleFuel = new ApexCharts(document.getElementById('chart-vehicle-fuel'), {
             ...getApexTheme(),
             series: fuelSeries,
-            chart: { type: 'donut', height: 250, background: 'transparent' },
+            chart: { 
+                type: 'donut', 
+                height: 250, 
+                background: 'transparent',
+                events: {
+                    dataPointSelection: function(e, chart, config) {
+                        if (config.dataPointIndex === undefined) return;
+                        const fuelType = fuelLabels[config.dataPointIndex];
+                        const filtered = vehicles.filter(v => v.fuelType === fuelType);
+                        openDataTableModal(`Vehicles - ${fuelType}`, filtered, COLUMNS.vehicles);
+                    }
+                }
+            },
             labels: fuelLabels,
             colors: ['#0ea5e9', '#14b8a6', '#f59e0b', '#8b5cf6'], // Custom colors for fuel
             plotOptions: { pie: { donut: { size: '65%' } } },
@@ -1687,7 +1746,19 @@
         state.charts.vehicleAccident = new ApexCharts(document.getElementById('chart-vehicle-accident'), {
             ...getApexTheme(),
             series: [noAccidentVehicles, accidentVehicles],
-            chart: { type: 'donut', height: 250, background: 'transparent' },
+            chart: { 
+                type: 'donut', 
+                height: 250, 
+                background: 'transparent',
+                events: {
+                    dataPointSelection: function(e, chart, config) {
+                        if (config.dataPointIndex === undefined) return;
+                        const hasAccident = config.dataPointIndex === 1;
+                        const filtered = vehicles.filter(v => hasAccident ? v.accidentCount > 0 : v.accidentCount === 0);
+                        openDataTableModal(hasAccident ? 'Vehicles with Accidents' : 'Vehicles with Zero Accidents', filtered, COLUMNS.vehicles);
+                    }
+                }
+            },
             labels: ['Zero Accidents', 'Had Accidents'],
             colors: ['#10b981', '#ef4444'], // Green for zero, Red for accidents
             plotOptions: { pie: { donut: { size: '65%', labels: { show: true, name: { show: true }, value: { show: true } } } } },
