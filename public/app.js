@@ -2720,11 +2720,31 @@
     function initVehicle360() {
         const searchBtn = document.getElementById('v360-search-btn');
         const searchInput = document.getElementById('v360-search-input');
+        const copyBtn = document.getElementById('v360-copy-btn');
         
         searchBtn.addEventListener('click', () => performVehicle360Search(searchInput.value));
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') performVehicle360Search(searchInput.value);
         });
+
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                const regNumber = document.getElementById('v360-reg-number').textContent;
+                if (regNumber && regNumber !== '--') {
+                    navigator.clipboard.writeText(regNumber).then(() => {
+                        const icon = copyBtn.querySelector('i');
+                        icon.setAttribute('data-lucide', 'check');
+                        icon.style.color = 'var(--accent-emerald)';
+                        lucide.createIcons();
+                        setTimeout(() => {
+                            icon.setAttribute('data-lucide', 'copy');
+                            icon.style.color = '';
+                            lucide.createIcons();
+                        }, 2000);
+                    });
+                }
+            });
+        }
     }
 
     function performVehicle360Search(regNumber) {
