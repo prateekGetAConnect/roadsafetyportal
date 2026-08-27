@@ -3023,6 +3023,10 @@
             document.getElementById('v360-veh-insurance').textContent = vehicle.insuranceValidTill;
             document.getElementById('v360-veh-chassis').textContent = vehicle.chassisNumber;
             document.getElementById('v360-veh-engine').textContent = vehicle.engineNumber;
+            document.getElementById('v360-veh-owner').textContent = vehicle.ownerName;
+            document.getElementById('v360-veh-state').textContent = vehicle.state;
+            document.getElementById('v360-veh-ownership').textContent = vehicle.ownershipChanges;
+            document.getElementById('v360-veh-accidents').textContent = vehicle.accidentCount;
             document.getElementById('v360-veh-violations').textContent = vehChallans.length;
             
             const isFitnessValid = vehicle.fitnessExpired === false;
@@ -3043,6 +3047,10 @@
             document.getElementById('v360-veh-insurance').textContent = '--';
             document.getElementById('v360-veh-chassis').textContent = '--';
             document.getElementById('v360-veh-engine').textContent = '--';
+            document.getElementById('v360-veh-owner').textContent = '--';
+            document.getElementById('v360-veh-state').textContent = '--';
+            document.getElementById('v360-veh-ownership').textContent = '--';
+            document.getElementById('v360-veh-accidents').textContent = '--';
             document.getElementById('v360-veh-violations').textContent = '--';
             document.getElementById('v360-vehicle-status').innerHTML = '';
         }
