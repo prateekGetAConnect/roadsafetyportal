@@ -996,14 +996,14 @@
                         
                         <!-- Driver Profile -->
                         <div class="profile-card card" id="v360-driver-card">
-                            <div class="profile-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 20px; margin-bottom: 20px;">
-                                <div style="display: flex; align-items: center; gap: 20px; min-width: 0;">
+                            <div class="profile-header" style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; border-bottom: 1px solid var(--border-glass); padding-bottom: 20px; margin-bottom: 20px;">
+                                <div style="display: flex; align-items: center; gap: 20px; flex-grow: 1; min-width: 250px;">
                                     <div class="profile-avatar" style="width: 72px; height: 72px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; background: var(--accent-indigo-glow); border-radius: 50%;">
                                         <i data-lucide="user"></i>
                                     </div>
-                                    <div style="min-width: 0;">
+                                    <div style="flex-grow: 1;">
                                         <div style="display: flex; align-items: center; gap: 8px;">
-                                            <h2 style="margin: 0; color: var(--text-primary); font-size: 1.3rem; font-family: var(--font-mono); letter-spacing: 0.5px; word-break: break-word;" id="v360-dl-number">--</h2>
+                                            <h2 style="margin: 0; color: var(--text-primary); font-size: 1.3rem; font-family: var(--font-mono); letter-spacing: 0.5px; white-space: nowrap;" id="v360-dl-number">--</h2>
                                             <button id="v360-driver-copy-btn" class="btn btn-ghost copy-btn-v360" data-target="v360-dl-number" style="padding: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" title="Copy DL Number">
                                                 <i data-lucide="copy" style="width: 16px; height: 16px;"></i>
                                             </button>
@@ -1011,7 +1011,7 @@
                                         <div style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 4px; word-break: break-word;" id="v360-driver-name">--</div>
                                     </div>
                                 </div>
-                                <div id="v360-driver-status" style="flex-shrink: 0; margin-left: 12px; display: flex; align-items: center;"></div>
+                                <div id="v360-driver-status" style="flex-shrink: 0; display: flex; align-items: center;"></div>
                             </div>
                             <div class="grid-2" style="row-gap: 20px; column-gap: 16px;">
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">License Type</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-type">--</div></div>
@@ -1031,14 +1031,14 @@
 
                         <!-- Vehicle Profile -->
                         <div class="profile-card card" id="v360-vehicle-card">
-                            <div class="profile-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 20px; margin-bottom: 20px;">
-                                <div style="display: flex; align-items: center; gap: 20px; min-width: 0;">
+                            <div class="profile-header" style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; border-bottom: 1px solid var(--border-glass); padding-bottom: 20px; margin-bottom: 20px;">
+                                <div style="display: flex; align-items: center; gap: 20px; flex-grow: 1; min-width: 250px;">
                                     <div class="profile-avatar" style="width: 72px; height: 72px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; background: var(--accent-indigo-glow); border-radius: 50%;">
                                         <i data-lucide="car-front"></i>
                                     </div>
-                                    <div style="min-width: 0;">
+                                    <div style="flex-grow: 1;">
                                         <div style="display: flex; align-items: center; gap: 8px;">
-                                            <h2 style="margin: 0; color: var(--text-primary); font-size: 1.3rem; font-family: var(--font-mono); letter-spacing: 0.5px; word-break: break-word;" id="v360-reg-number">--</h2>
+                                            <h2 style="margin: 0; color: var(--text-primary); font-size: 1.3rem; font-family: var(--font-mono); letter-spacing: 0.5px; white-space: nowrap;" id="v360-reg-number">--</h2>
                                             <button id="v360-vehicle-copy-btn" class="btn btn-ghost copy-btn-v360" data-target="v360-reg-number" style="padding: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" title="Copy Reg Number">
                                                 <i data-lucide="copy" style="width: 16px; height: 16px;"></i>
                                             </button>
@@ -1046,7 +1046,7 @@
                                         <div style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 4px; word-break: break-word;" id="v360-make-model">--</div>
                                     </div>
                                 </div>
-                                <div id="v360-vehicle-status" style="flex-shrink: 0; margin-left: 12px; display: flex; align-items: center;"></div>
+                                <div id="v360-vehicle-status" style="flex-shrink: 0; display: flex; align-items: center;"></div>
                             </div>
                             <div class="grid-2" style="row-gap: 20px; column-gap: 16px;">
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Class / Fuel</div><div style="color: var(--text-primary); font-weight: 600;"><span id="v360-class">--</span> &bull; <span id="v360-fuel">--</span></div></div>
