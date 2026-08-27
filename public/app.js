@@ -229,11 +229,33 @@
                     renderVehicleOverallAnalysis();
                     state.vehicleRiskInited = true;
                 }
-                if (tab === 'vehicle-360' && !state.vehicle360Inited) {
-                    initVehicle360();
-                    state.vehicle360Inited = true;
-                }
-                if (tab === 'accident-hotspot' && !state.mapInited) {
+                if (tab === 'vehicle-360') {
+                    if (!state.vehicle360Inited) {
+                        initVehicle360();
+                        state.vehicle360Inited = true;
+                    } else {
+                        // Reset tab to default screen
+                        const searchInput = document.getElementById('v360-search-input');
+                        if (searchInput) searchInput.value = '';
+                        
+                        const clearBtn = document.getElementById('v360-clear-btn');
+                        if (clearBtn) clearBtn.style.display = 'none';
+
+                        const emptyState = document.getElementById('v360-empty-state');
+                        const resultsDiv = document.getElementById('v360-results');
+                        
+                        if (emptyState) {
+                            emptyState.style.display = 'block';
+                            emptyState.innerHTML = `
+                                <i data-lucide="car" style="width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5;"></i>
+                                <h3 style="color: var(--text-primary); margin-bottom: 8px;">Vehicle 360 Degree View</h3>
+                                <p>Enter a Registration Number or Driving Licence above to fetch comprehensive records, history, and risk profiling.</p>
+                            `;
+                            lucide.createIcons();
+                        }
+                        if (resultsDiv) resultsDiv.style.display = 'none';
+                    }
+                } else if (tab === 'accident-hotspot' && !state.mapInited) {
                     setTimeout(() => {
                         initMap();
                         renderAccidentHotspots();
@@ -2748,11 +2770,11 @@
                 if (query && query !== '--') {
                     // Navigate to 360 tab
                     document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                    const nav360 = document.querySelector('.nav-item[data-tab="360"]');
+                    const nav360 = document.querySelector('.nav-item[data-tab="vehicle-360"]');
                     if (nav360) nav360.classList.add('active');
 
                     document.querySelectorAll('.tab-pane').forEach(tab => tab.classList.remove('active'));
-                    const tab360 = document.getElementById('tab-360');
+                    const tab360 = document.getElementById('tab-vehicle-360');
                     if (tab360) tab360.classList.add('active');
 
                     // Set input and perform search
@@ -2772,11 +2794,33 @@
     function initVehicle360() {
         const searchBtn = document.getElementById('v360-search-btn');
         const searchInput = document.getElementById('v360-search-input');
+        const clearBtn = document.getElementById('v360-clear-btn');
         
         searchBtn.addEventListener('click', () => performVehicle360Search(searchInput.value));
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') performVehicle360Search(searchInput.value);
         });
+
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                clearBtn.style.display = 'none';
+                
+                const emptyState = document.getElementById('v360-empty-state');
+                const resultsDiv = document.getElementById('v360-results');
+                
+                if (emptyState) {
+                    emptyState.style.display = 'block';
+                    emptyState.innerHTML = `
+                        <i data-lucide="car" style="width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5;"></i>
+                        <h3 style="color: var(--text-primary); margin-bottom: 8px;">Vehicle 360 Degree View</h3>
+                        <p>Enter a Registration Number or Driving Licence above to fetch comprehensive records, history, and risk profiling.</p>
+                    `;
+                    lucide.createIcons();
+                }
+                if (resultsDiv) resultsDiv.style.display = 'none';
+            });
+        }
 
         document.querySelectorAll('.copy-btn-v360').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -2797,6 +2841,9 @@
     function performVehicle360Search(queryInput) {
         const query = queryInput.trim().toUpperCase();
         if (!query) return;
+
+        const clearBtn = document.getElementById('v360-clear-btn');
+        if (clearBtn) clearBtn.style.display = 'block';
 
         let vehicle = window.TransportData.vehicles.find(v => v.regNumber === query);
         let driver = window.TransportData.drivers.find(d => d.dlNumber === query);
