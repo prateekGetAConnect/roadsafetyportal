@@ -992,100 +992,126 @@
                 </div>
 
                 <div id="v360-results" style="display: none;">
-                    <!-- Profiles -->
-                    <div class="grid-3" style="margin-bottom: 24px;">
+                    <!-- Top Section: Profiles & Risk -->
+                    <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 340px; gap: 24px; margin-bottom: 24px;">
+                        
                         <!-- Driver Profile -->
                         <div class="profile-card card" id="v360-driver-card">
-                            <div class="profile-header" style="display: flex; align-items: center; gap: 24px; border-bottom: 1px solid var(--border-glass); padding-bottom: 20px; margin-bottom: 20px;">
-                                <div class="profile-avatar" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: white; background: var(--accent-indigo-glow);">
-                                    <i data-lucide="user"></i>
-                                </div>
-                                <div style="flex: 1;">
-                                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                        <div>
-                                            <div style="display: flex; align-items: center; gap: 8px;">
-                                                <button id="v360-driver-copy-btn" class="btn btn-ghost copy-btn-v360" data-target="v360-dl-number" style="padding: 6px; display: flex; align-items: center; justify-content: center;" title="Copy DL Number">
-                                                    <i data-lucide="copy" style="width: 20px; height: 20px;"></i>
-                                                </button>
-                                                <h2 style="margin: 0; color: var(--text-primary); font-size: 1.5rem; font-family: var(--font-mono); letter-spacing: 1px;" id="v360-dl-number">--</h2>
-                                            </div>
-                                            <div style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 4px;" id="v360-driver-name">--</div>
+                            <div class="profile-header" style="display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 20px; margin-bottom: 20px;">
+                                <div style="display: flex; gap: 20px;">
+                                    <div class="profile-avatar" style="width: 72px; height: 72px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; background: var(--accent-indigo-glow); border-radius: 50%;">
+                                        <i data-lucide="user"></i>
+                                    </div>
+                                    <div style="min-width: 0;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <h2 style="margin: 0; color: var(--text-primary); font-size: 1.4rem; font-family: var(--font-mono); letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="v360-dl-number">--</h2>
+                                            <button id="v360-driver-copy-btn" class="btn btn-ghost copy-btn-v360" data-target="v360-dl-number" style="padding: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" title="Copy DL Number">
+                                                <i data-lucide="copy" style="width: 16px; height: 16px;"></i>
+                                            </button>
                                         </div>
-                                        <div id="v360-driver-status"></div>
+                                        <div style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="v360-driver-name">--</div>
                                     </div>
                                 </div>
+                                <div id="v360-driver-status" style="flex-shrink: 0; margin-left: 12px;"></div>
                             </div>
-                            <div class="grid-3" style="margin-bottom: 24px; row-gap: 16px;">
+                            <div class="grid-2" style="row-gap: 20px; column-gap: 16px;">
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">License Type</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-type">--</div></div>
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Experience</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-exp">--</div></div>
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Age / Gender</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-demographics">--</div></div>
+                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Test Attempts</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-attempts">--</div></div>
+                                <div style="grid-column: span 2; border-top: 1px dashed var(--border-glass); padding-top: 12px;"></div>
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">State</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-state">--</div></div>
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">RTO Office</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-rto">--</div></div>
-                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Test Attempts</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-attempts">--</div></div>
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Issue Date</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-issue">--</div></div>
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Expiry Date</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-expiry">--</div></div>
-                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Accidents</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-accidents">--</div></div>
-                                <div style="grid-column: span 3;"><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Violations</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-violations">--</div></div>
+                                <div style="grid-column: span 2; border-top: 1px dashed var(--border-glass); padding-top: 12px;"></div>
+                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Total Accidents</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-accidents">--</div></div>
+                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Total Violations</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-dl-violations">--</div></div>
                             </div>
                         </div>
 
                         <!-- Vehicle Profile -->
                         <div class="profile-card card" id="v360-vehicle-card">
-                            <div class="profile-header" style="display: flex; align-items: center; gap: 24px; border-bottom: 1px solid var(--border-glass); padding-bottom: 20px; margin-bottom: 20px;">
-                                <div class="profile-avatar" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: white; background: var(--accent-indigo-glow);">
-                                    <i data-lucide="car-front"></i>
-                                </div>
-                                <div style="flex: 1;">
-                                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                        <div>
-                                            <div style="display: flex; align-items: center; gap: 8px;">
-                                                <button id="v360-vehicle-copy-btn" class="btn btn-ghost copy-btn-v360" data-target="v360-reg-number" style="padding: 6px; display: flex; align-items: center; justify-content: center;" title="Copy Registration Number">
-                                                    <i data-lucide="copy" style="width: 20px; height: 20px;"></i>
-                                                </button>
-                                                <h2 style="margin: 0; color: var(--text-primary); font-size: 1.5rem; font-family: var(--font-mono); letter-spacing: 1px;" id="v360-reg-number">--</h2>
-                                            </div>
-                                            <div style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 4px;" id="v360-make-model">--</div>
+                            <div class="profile-header" style="display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 20px; margin-bottom: 20px;">
+                                <div style="display: flex; gap: 20px;">
+                                    <div class="profile-avatar" style="width: 72px; height: 72px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; background: var(--accent-indigo-glow); border-radius: 50%;">
+                                        <i data-lucide="car-front"></i>
+                                    </div>
+                                    <div style="min-width: 0;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <h2 style="margin: 0; color: var(--text-primary); font-size: 1.4rem; font-family: var(--font-mono); letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="v360-reg-number">--</h2>
+                                            <button id="v360-vehicle-copy-btn" class="btn btn-ghost copy-btn-v360" data-target="v360-reg-number" style="padding: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" title="Copy Reg Number">
+                                                <i data-lucide="copy" style="width: 16px; height: 16px;"></i>
+                                            </button>
                                         </div>
-                                        <div id="v360-vehicle-status"></div>
+                                        <div style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="v360-make-model">--</div>
                                     </div>
                                 </div>
+                                <div id="v360-vehicle-status" style="flex-shrink: 0; margin-left: 12px;"></div>
                             </div>
-                            <div class="grid-3" style="margin-bottom: 24px; row-gap: 16px;">
-                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Vehicle Class</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-class">--</div></div>
-                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Fuel Type</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-fuel">--</div></div>
-                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Age</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-age">--</div></div>
+                            <div class="grid-2" style="row-gap: 20px; column-gap: 16px;">
+                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Class / Fuel</div><div style="color: var(--text-primary); font-weight: 600;"><span id="v360-class">--</span> &bull; <span id="v360-fuel">--</span></div></div>
+                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Age / Color</div><div style="color: var(--text-primary); font-weight: 600;"><span id="v360-age">--</span> &bull; <span id="v360-veh-color">--</span></div></div>
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Reg Date</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-veh-regdate">--</div></div>
-                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Color</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-veh-color">--</div></div>
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Commercial Use</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-veh-commercial">--</div></div>
+                                <div style="grid-column: span 2; border-top: 1px dashed var(--border-glass); padding-top: 12px;"></div>
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Fitness Expiry</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-veh-fitness">--</div></div>
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">PUCC Expiry</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-veh-pucc">--</div></div>
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Insurance Exp</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-veh-insurance">--</div></div>
-                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Chassis</div><div style="color: var(--text-primary); font-weight: 600; font-size: 0.8rem;" id="v360-veh-chassis">--</div></div>
-                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Engine</div><div style="color: var(--text-primary); font-weight: 600; font-size: 0.8rem;" id="v360-veh-engine">--</div></div>
+                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">State / Prev Owners</div><div style="color: var(--text-primary); font-weight: 600;"><span id="v360-veh-state">--</span> &bull; <span id="v360-veh-ownership">--</span></div></div>
+                                <div style="grid-column: span 2; border-top: 1px dashed var(--border-glass); padding-top: 12px;"></div>
+                                <div style="grid-column: span 2;"><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Chassis Number</div><div style="color: var(--text-primary); font-weight: 600; font-family: var(--font-mono); font-size: 0.9rem;" id="v360-veh-chassis">--</div></div>
+                                <div style="grid-column: span 2;"><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Engine Number</div><div style="color: var(--text-primary); font-weight: 600; font-family: var(--font-mono); font-size: 0.9rem;" id="v360-veh-engine">--</div></div>
+                                <div style="grid-column: span 2; border-top: 1px dashed var(--border-glass); padding-top: 12px;"></div>
                                 <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Owner Name</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-veh-owner">--</div></div>
-                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">State</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-veh-state">--</div></div>
-                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Prev Owners</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-veh-ownership">--</div></div>
-                                <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Accidents</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-veh-accidents">--</div></div>
-                                <div style="grid-column: span 3;"><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Violations</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-veh-violations">--</div></div>
+                                <div style="display: flex; gap: 24px;">
+                                    <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Accidents</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-veh-accidents">--</div></div>
+                                    <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Violations</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-veh-violations">--</div></div>
+                                </div>
                             </div>
                         </div>
+
                         <!-- Risk Scores -->
-                        <div class="card" style="display: flex; flex-direction: column; justify-content: center; gap: 24px; padding: 24px; border: 1px solid var(--accent-indigo); background: rgba(99, 102, 241, 0.05); box-shadow: var(--shadow-glow-indigo);">
-                            <div style="text-align: center; border-bottom: 1px solid var(--border-glass); padding-bottom: 16px;">
-                                <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 12px; font-weight: 600;">Overall Combined Risk</h3>
-                                <div style="font-size: 4rem; font-family: var(--font-mono); font-weight: 700; line-height: 1;" id="v360-overall-risk-score">--</div>
-                                <div id="v360-overall-risk-badge" style="margin-top: 12px;"></div>
-                            </div>
-                            <div class="grid-2" style="gap: 16px;">
-                                <div style="text-align: center; border-right: 1px solid var(--border-glass);">
-                                    <h3 style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">Driver Risk</h3>
-                                    <div style="font-size: 2.2rem; font-family: var(--font-mono); font-weight: 700;" id="v360-driver-risk-score">--</div>
-                                    <div id="v360-driver-risk-badge" style="margin-top: 4px;"></div>
+                        <div class="card" style="display: flex; flex-direction: column; height: 100%; border: 1px solid var(--accent-indigo); background: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.02) 100%); box-shadow: var(--shadow-glow-indigo); padding: 0;">
+                            <div style="padding: 32px 24px; text-align: center; border-bottom: 1px solid var(--border-glass);">
+                                <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 24px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Overall Combined Risk</h3>
+                                
+                                <div style="position: relative; width: 160px; height: 160px; margin: 0 auto;">
+                                    <svg viewBox="0 0 36 36" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="3" />
+                                        <path id="v360-overall-svg-path" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--accent-red)" stroke-width="3" stroke-dasharray="0, 100" />
+                                    </svg>
+                                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                        <div style="font-size: 3.5rem; font-family: var(--font-mono); font-weight: 700; line-height: 1;" id="v360-overall-risk-score">--</div>
+                                    </div>
                                 </div>
-                                <div style="text-align: center;">
-                                    <h3 style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">Vehicle Risk</h3>
-                                    <div style="font-size: 2.2rem; font-family: var(--font-mono); font-weight: 700;" id="v360-vehicle-risk-score">--</div>
-                                    <div id="v360-vehicle-risk-badge" style="margin-top: 4px;"></div>
+                                <div id="v360-overall-risk-badge" style="margin-top: 20px;"></div>
+                            </div>
+                            
+                            <div style="padding: 24px; flex: 1; display: flex; flex-direction: column; gap: 24px; justify-content: center;">
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: baseline;">
+                                        <span style="color: var(--text-secondary); font-size: 0.9rem;">Driver Risk (Saarthi)</span>
+                                        <div style="display: flex; align-items: baseline; gap: 8px;">
+                                            <span style="font-family: var(--font-mono); font-weight: 700; font-size: 1.5rem;" id="v360-driver-risk-score">--</span>
+                                        </div>
+                                    </div>
+                                    <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-bottom: 6px;">
+                                        <div id="v360-driver-risk-bar" style="height: 100%; width: 0%; background: var(--accent-amber); border-radius: 3px; transition: width 1s ease;"></div>
+                                    </div>
+                                    <div id="v360-driver-risk-badge" style="display: flex; justify-content: flex-end;"></div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: baseline;">
+                                        <span style="color: var(--text-secondary); font-size: 0.9rem;">Vehicle Risk (Vahan)</span>
+                                        <div style="display: flex; align-items: baseline; gap: 8px;">
+                                            <span style="font-family: var(--font-mono); font-weight: 700; font-size: 1.5rem;" id="v360-vehicle-risk-score">--</span>
+                                        </div>
+                                    </div>
+                                    <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-bottom: 6px;">
+                                        <div id="v360-vehicle-risk-bar" style="height: 100%; width: 0%; background: var(--accent-red); border-radius: 3px; transition: width 1s ease;"></div>
+                                    </div>
+                                    <div id="v360-vehicle-risk-badge" style="display: flex; justify-content: flex-end;"></div>
                                 </div>
                             </div>
                         </div>

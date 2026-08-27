@@ -3060,23 +3060,36 @@
             document.getElementById('v360-driver-risk-score').textContent = driverRisk.score;
             document.getElementById('v360-driver-risk-score').style.color = riskColor(driverRisk.score);
             document.getElementById('v360-driver-risk-badge').innerHTML = `<span class="risk-badge ${riskBadgeClass(driverRisk.score)}">${driverRisk.category}</span>`;
+            document.getElementById('v360-driver-risk-bar').style.width = driverRisk.score + '%';
+            document.getElementById('v360-driver-risk-bar').style.background = riskColor(driverRisk.score);
         } else {
             document.getElementById('v360-driver-risk-score').textContent = '--';
             document.getElementById('v360-driver-risk-badge').innerHTML = '';
+            document.getElementById('v360-driver-risk-bar').style.width = '0%';
         }
 
         if (vehRisk) {
             document.getElementById('v360-vehicle-risk-score').textContent = vehRisk.score;
             document.getElementById('v360-vehicle-risk-score').style.color = riskColor(vehRisk.score);
             document.getElementById('v360-vehicle-risk-badge').innerHTML = `<span class="risk-badge ${riskBadgeClass(vehRisk.score)}">${vehRisk.category}</span>`;
+            document.getElementById('v360-vehicle-risk-bar').style.width = vehRisk.score + '%';
+            document.getElementById('v360-vehicle-risk-bar').style.background = riskColor(vehRisk.score);
         } else {
             document.getElementById('v360-vehicle-risk-score').textContent = '--';
             document.getElementById('v360-vehicle-risk-badge').innerHTML = '';
+            document.getElementById('v360-vehicle-risk-bar').style.width = '0%';
         }
 
         document.getElementById('v360-overall-risk-score').textContent = overallScore;
         document.getElementById('v360-overall-risk-score').style.color = riskColor(overallScore);
         document.getElementById('v360-overall-risk-badge').innerHTML = `<span class="risk-badge ${riskBadgeClass(overallScore)}">${overallCategory}</span>`;
+        
+        // Update SVG Gauge
+        const svgPath = document.getElementById('v360-overall-svg-path');
+        if (svgPath) {
+            svgPath.style.strokeDasharray = `${overallScore}, 100`;
+            svgPath.style.stroke = riskColor(overallScore);
+        }
 
         // 4. Populate Tables
         const combinedChallans = [...new Map([...vehChallans, ...driverChallans].map(c => [c.challanId, c])).values()];
