@@ -1809,15 +1809,9 @@
                 e.stopPropagation();
                 const reg = btn.dataset.reg;
                 navigator.clipboard.writeText(reg).then(() => {
-                    const icon = btn.querySelector('i');
-                    icon.setAttribute('data-lucide', 'check');
-                    icon.style.color = 'var(--accent-emerald)';
-                    lucide.createIcons();
-                    setTimeout(() => {
-                        icon.setAttribute('data-lucide', 'copy');
-                        icon.style.color = '';
-                        lucide.createIcons();
-                    }, 2000);
+                    showToast('Copied to Clipboard', `Registration Number ${reg} copied!`, 'success');
+                }).catch(() => {
+                    showToast('Copy Failed', 'Could not copy to clipboard.', 'error');
                 });
             });
         });
@@ -2760,15 +2754,9 @@
                 const regNumber = document.getElementById('v360-reg-number').textContent;
                 if (regNumber && regNumber !== '--') {
                     navigator.clipboard.writeText(regNumber).then(() => {
-                        const icon = copyBtn.querySelector('i');
-                        icon.setAttribute('data-lucide', 'check');
-                        icon.style.color = 'var(--accent-emerald)';
-                        lucide.createIcons();
-                        setTimeout(() => {
-                            icon.setAttribute('data-lucide', 'copy');
-                            icon.style.color = '';
-                            lucide.createIcons();
-                        }, 2000);
+                        showToast('Copied to Clipboard', `Registration Number ${regNumber} copied!`, 'success');
+                    }).catch(() => {
+                        showToast('Copy Failed', 'Could not copy to clipboard.', 'error');
                     });
                 }
             });
