@@ -964,6 +964,100 @@
                 </div>
             </div>
 
+            <!-- ═══════════════════════════════════════ VEHICLE 360 (NEW TAB) ═══════════════════════════════════════ -->
+            <div class="tab-pane" id="tab-vehicle-360">
+                <div class="card" style="margin-bottom: 24px;">
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <i data-lucide="scan-line" style="width: 24px; height: 24px; color: var(--accent-indigo);"></i>
+                        <input type="text" id="v360-search-input" class="search-box" placeholder="Enter Vehicle Registration Number (e.g. DL-3C-AB-2294)" style="flex: 1; padding: 12px 16px; font-size: 1.1rem; text-transform: uppercase;">
+                        <button id="v360-search-btn" class="btn btn-primary" style="padding: 12px 24px; font-size: 1rem;"><i data-lucide="search"></i> Search</button>
+                    </div>
+                </div>
+
+                <div id="v360-empty-state" style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                    <i data-lucide="car" style="width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5;"></i>
+                    <h3 style="color: var(--text-primary); margin-bottom: 8px;">Vehicle 360 Degree View</h3>
+                    <p>Enter a Registration Number above to fetch comprehensive vehicle records, history, and risk profiling.</p>
+                </div>
+
+                <div id="v360-results" style="display: none;">
+                    <div class="profile-card card" style="margin-bottom: 24px;">
+                        <div class="profile-header" style="display: flex; align-items: center; gap: 24px; border-bottom: 1px solid var(--border-glass); padding-bottom: 20px; margin-bottom: 20px;">
+                            <div class="profile-avatar" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: white;">
+                                <i data-lucide="car-front"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <div>
+                                        <h2 style="margin: 0; color: var(--text-primary); font-size: 1.8rem; font-family: var(--font-mono); letter-spacing: 2px;" id="v360-reg-number">--</h2>
+                                        <div style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 4px;" id="v360-make-model">--</div>
+                                    </div>
+                                    <div id="v360-risk-badge-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-4" style="margin-bottom: 24px;">
+                            <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Owner</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-owner">--</div></div>
+                            <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Vehicle Class</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-class">--</div></div>
+                            <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Fuel Type</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-fuel">--</div></div>
+                            <div><div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px;">Age</div><div style="color: var(--text-primary); font-weight: 600;" id="v360-age">--</div></div>
+                        </div>
+                        <div style="display: flex; gap: 12px;" id="v360-status-container">
+                        </div>
+                    </div>
+
+                    <div class="grid-4" style="margin-bottom: 24px;">
+                        <div class="kpi-card">
+                            <div class="kpi-icon" style="background: var(--accent-indigo-glow); color: var(--accent-indigo);"><i data-lucide="alert-triangle"></i></div>
+                            <div><div class="kpi-label">Violations</div><div class="kpi-value" id="v360-kpi-violations">0</div></div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber);"><i data-lucide="zap"></i></div>
+                            <div><div class="kpi-label">Accidents</div><div class="kpi-value" id="v360-kpi-accidents">0</div></div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);"><i data-lucide="users"></i></div>
+                            <div><div class="kpi-label">Ownership Changes</div><div class="kpi-value" id="v360-kpi-owners">0</div></div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--accent-red);"><i data-lucide="activity"></i></div>
+                            <div><div class="kpi-label">Risk Score</div><div class="kpi-value" id="v360-kpi-score">0</div></div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2" style="margin-bottom: 24px;">
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <h3 class="card-title">Recent Challans</h3>
+                                    <div class="card-subtitle">Enforcement history for this vehicle</div>
+                                </div>
+                            </div>
+                            <div style="overflow-x: auto;">
+                                <table class="data-table">
+                                    <thead><tr><th>Date</th><th>Violation</th><th>Location</th><th>Fine</th><th>Status</th></tr></thead>
+                                    <tbody id="v360-challans-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <h3 class="card-title">Accident History</h3>
+                                    <div class="card-subtitle">Incidents involving this vehicle</div>
+                                </div>
+                            </div>
+                            <div style="overflow-x: auto;">
+                                <table class="data-table">
+                                    <thead><tr><th>Date</th><th>Severity</th><th>Location</th><th>Cause</th></tr></thead>
+                                    <tbody id="v360-accidents-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- ╔══════════════════════ TAB 5: ACCIDENT HOTSPOTS ══════════════════════╗ -->
             <div class="tab-pane" id="tab-accident-hotspot">
                 <div class="page-header">
