@@ -720,6 +720,12 @@ a:hover {
   gap: 20px;
 }
 
+.grid-v360-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 340px;
+  gap: 24px;
+}
+
 /* ══════════════════════════════════════════════════════════════════
    RISK BADGES
    ══════════════════════════════════════════════════════════════════ */
@@ -1526,6 +1532,10 @@ a:hover {
 
   .grid-2-1,
   .grid-1-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-v360-top {
     grid-template-columns: 1fr;
   }
 
