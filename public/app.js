@@ -1784,7 +1784,14 @@
         const tbody = document.getElementById('vehicle-top-risk-tbody');
         tbody.innerHTML = top20.map(v => `
             <tr class="clickable-row" data-reg="${v.regNumber}">
-                <td><span style="font-family: var(--font-mono); font-size: 0.8rem;">${v.regNumber}</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button class="btn btn-ghost copy-btn" data-reg="${v.regNumber}" style="padding: 4px; display: flex; align-items: center; justify-content: center;" title="Copy Registration Number">
+                            <i data-lucide="copy" style="width: 16px; height: 16px;"></i>
+                        </button>
+                        <span style="font-family: var(--font-mono); font-size: 0.8rem;">${v.regNumber}</span>
+                    </div>
+                </td>
                 <td>${v.type}</td>
                 <td>${v.make} ${v.model}</td>
                 <td>${v.vehicleAge}</td>
@@ -1793,6 +1800,27 @@
                 <td><span class="risk-badge ${riskBadgeClass(v.riskScore)}">${v.riskCategory}</span></td>
             </tr>
         `).join('');
+
+        // Re-create icons for the new copy buttons
+        setTimeout(() => { lucide.createIcons(); }, 10);
+
+        tbody.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const reg = btn.dataset.reg;
+                navigator.clipboard.writeText(reg).then(() => {
+                    const icon = btn.querySelector('i');
+                    icon.setAttribute('data-lucide', 'check');
+                    icon.style.color = 'var(--accent-emerald)';
+                    lucide.createIcons();
+                    setTimeout(() => {
+                        icon.setAttribute('data-lucide', 'copy');
+                        icon.style.color = '';
+                        lucide.createIcons();
+                    }, 2000);
+                });
+            });
+        });
 
         tbody.querySelectorAll('.clickable-row').forEach(row => {
             row.addEventListener('click', () => {
